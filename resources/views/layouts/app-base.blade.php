@@ -11,8 +11,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Noto+Serif:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/tesis-ui.css') }}">
     @stack('estilos')
+    @stack('scripts_cabecera')
 </head>
-<body>
+<body class="@yield('clase_cuerpo')">
     @yield('estructura')
     @stack('scripts')
 </body>
