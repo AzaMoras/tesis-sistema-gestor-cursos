@@ -187,6 +187,48 @@ futuro flujo de escritura de estos recursos debe respetar el mismo protocolo.
 
 ## Integración pendiente
 
+### Políticas v2 y vigencia (10/11/2026)
+
+Las [reglas v2](../../docs/REGLAS_NEGOCIO_V2.md) sustituyen la obligatoriedad de
+alta administrativa para participantes. `SolicitudRegistroService` se conserva
+como flujo interno/especial; no implementa el autorregistro público ni impone
+documentos como requisito general. No eliminar solicitudes o evidencias anteriores.
+
+`VigenciaAccesoService` requiere la migración aditiva de Fase 00 y una edición con
+política explícita. `activar()` exige `inscripciones.gestionar`, inscripción
+confirmada y guarda fechas UTC y días de prórroga como instantánea. Repetir la
+activación no cambia fechas ni duplica auditoría. No se conecta automáticamente
+a confirmaciones de inscripción/pago: esa integración requiere acordar el momento
+de activación y la política institucional, sin aplicar plazos a históricos.
+
+`exigirPuedeIniciar()` recarga cuenta/institución/inscripción, exige propietario
+o permiso de gestión y deniega accesos sin activar, futuros o vencidos. En una
+transacción adquiere los bloqueos del protocolo existente. Las futuras escrituras
+de entrega/intento deben invocarlo dentro de su propia transacción. No se aplica
+a la consulta de resultados ni a la revisión de entregas ya recibidas.
+
+`aplicarProrrogaGratuita()` es una solicitud explícita del propietario o gestor;
+solo admite una por inscripción y usa los días habilitados en su instantánea,
+con vencimiento anterior/nuevo en bitácora. No registra pagos ni cambia notas.
+El segundo uso se rechaza. No hay job ni ruta que la ejecute automáticamente.
+
+`PoliticaVigencia::gratuitaLimitada()` ofrece 30 días sin prórroga automática;
+habilitar expresamente `diasProrroga: 14` si corresponde. No clasifica por sí sola
+el precio ni sustituye restricciones institucionales. Los valores resueltos deben
+asignarse a la edición desde servidor por un gestor autorizado.
+
+`PoliticaEvaluacion` implementa reglas puras: configuración institucional impuesta
+prevalece sobre curso y predeterminados; formativos ilimitados, finales con tres
+intentos por ciclo, duración ilustrativa de 30 minutos y plazo exclusivo en su
+extremo final. Reforzamiento exige todas las actividades obligatorias completadas
+después del cierre y hasta el instante de servidor. Sin actividades definidas no
+se autoriza otro ciclo. No persiste ciclos, no cuenta intentos en BD y no otorga
+permisos. No conectar estos parámetros a formularios sin autorización/validación.
+
+`EvaluacionService` sigue calificando entregas antiguas con sus límites existentes;
+no se reinterpreta como motor de exámenes v2. Ver [auditoría](../../docs/AUDITORIA_FASE_00.md)
+para el diseño pendiente de ciclos, intentos, versión e integración HTTP.
+
 Los servicios no se conectaron a nuevas rutas, vistas o controladores. Esa capa
 deberá conservar los middleware, construir parámetros validados y presentar las
 excepciones de autorización (403), validación (422) y recurso inexistente (404).
