@@ -13,12 +13,16 @@ Antes de proponer cambios, consulta según corresponda:
 - `docs/FLUJO_DESARROLLO.md`: procedimiento local, pruebas y Git.
 - `docs/PLAN_NOVIEMBRE_2026.md`: secuencia de entregables.
 - `docs/PLANTILLA_TAREA_CODEX.md`: formato para recibir tareas.
+- Políticas aprobadas el 10/11/2026: `docs/DECISIONES_PRODUCTO_V2.md` y `docs/REGLAS_NEGOCIO_V2.md` prevalecen sobre reglas anteriores contradictorias. Consultar `docs/AUDITORIA_FASE_00.md` para estado real y trazabilidad.
 
 ## Límites obligatorios
 - Nunca implementar sedes docentes, aulas, asistencia presencial o inventario/préstamo de equipos físicos. Las sedes registradas representan infraestructura o metadatos administrativos, no escuelas físicas.
 - Los cursos pueden ser autogestionados o acompañados por instructor; ambos son virtuales.
 - Mantener una interfaz compartida, con contenido y acciones permitidos según roles y permisos, sin duplicar todas las vistas por rol.
-- No crear cuentas privilegiadas mediante registro público. Una solicitud pública no equivale a una cuenta habilitada.
+- Permitir autorregistro de participantes con nombre, correo y contraseña; exigir verificación de correo antes de sus funciones privadas. Nunca crear cuentas privilegiadas desde registro público ni confiar en institución, rol, estado o verificación enviados por navegador. Su implementación HTTP sigue pendiente.
+- No exigir INE ni CURP para el registro general; los prerrequisitos se justifican por curso. Conservar solicitudes y evidencias históricas con acceso restringido.
+- Vigencia configurable por edición: 30 días como predeterminado solo para cursos gratuitos limitados, prórroga gratuita opcional de 14 días una vez. Sin cargos automáticos; vencer no borra progreso.
+- Formativos ilimitados; finales por módulo con tres intentos por ciclo y tiempo configurable, dentro de políticas institucionales. Un nuevo ciclo exige reforzamiento posterior al cierre. Conservar intentos, versiones y módulos acreditados; constancias internas.
 - Aplicar autorización en el servidor por rol, permiso, institución y propiedad del registro; no confiar solo en botones ocultos.
 - No duplicar módulos, archivos o tablas que ya existan. Inspeccionar primero el repositorio real.
 - No usar emojis en código, textos de interfaz, comentarios ni plantillas. Usar SVG cuando sean necesarios iconos.

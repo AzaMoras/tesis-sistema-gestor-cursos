@@ -1,12 +1,14 @@
 # Sistema de Gestión de Cursos e Inscripciones en Línea
 
-> **Guía de contexto y estilo del proyecto — propuesta para revisión (26/10/2026).**  
-> Repositorio previsto: `https://github.com/AzaMoras/tesis-sistema-gestor-cursos`  
-> Este archivo recoge decisiones conocidas de conversaciones y de la **documentación del paquete de migraciones de 32 entidades**. **No se pudo inspeccionar la carpeta `documentos/` completa de la laptop ni el código actualizado del repositorio**. Todo cambio futuro debe comprobar la estructura real antes de editar archivos.
+> **Guía de contexto y estilo del proyecto — políticas actualizadas el 10/11/2026.**
+> Repositorio previsto: `https://github.com/AzaMoras/tesis-sistema-gestor-cursos`
+> Las fuentes funcionales vigentes son [Decisiones v2](docs/DECISIONES_PRODUCTO_V2.md) y [Reglas v2](docs/REGLAS_NEGOCIO_V2.md). La [auditoría de Fase 00](docs/AUDITORIA_FASE_00.md) registra código y esquema inspeccionados localmente, cobertura y pendientes. Las secciones del paquete Blade siguen siendo guía de prototipos, no prueba de flujos implementados.
 
 ## 1. Propósito
 
-Sistema de información desarrollado como aplicación web para que diferentes instituciones gestionen capacitación **100 % virtual**: catálogo, solicitudes de acceso controlado, roles y permisos, ediciones y grupos, sesiones en línea, materiales, actividades, entregas, evaluaciones, inscripciones, listas de espera, pagos y constancias.
+Sistema de información desarrollado como aplicación web para que diferentes instituciones gestionen capacitación **100 % virtual**: catálogo, autorregistro de participantes con verificación de correo, solicitudes especiales, roles y permisos, ediciones y grupos, sesiones en línea, materiales, actividades, entregas, evaluaciones, inscripciones, listas de espera, pagos y constancias.
+
+Misión, visión, público inicial y propuesta de valor: [alcance v2](docs/VISION_MISION_Y_ALCANCE_V2.md). La viabilidad económica y un piloto ilustrativo de 200–300 participantes requieren validación; no son resultados probados.
 
 No es una escuela presencial. La tabla `sedes`, requerida por el profesor, representa datos administrativos o de infraestructura de alojamiento, **no salones donde se imparten cursos**.
 
@@ -14,11 +16,11 @@ No es una escuela presencial. La tabla `sedes`, requerida por el profesor, repre
 
 | Área | Convención o decisión de diseño | Estado verificado |
 |---|---|---|
-| Lenguaje y framework | PHP 8.4, Laravel 13, Blade | Definido para el proyecto; comprobar versiones instaladas |
-| BD | MariaDB, cuenta propia sin root | Definido; conexión real no comprobada aquí |
-| Modelo | 32 entidades de negocio en propuesta, con `users` estándar y 31 tablas adicionales | Documentadas en paquete de migraciones; ejecución en MariaDB no verificada |
-| Permisos | `users` ↔ `usuario_rol` ↔ `roles` ↔ `rol_permiso` ↔ `permisos`, ámbito institución | Modelo propuesto; falta código completo de autorización |
-| Registro | Solicitud pública y revisión por personal autorizado, sin autorregistro | Regla de negocio definida; no implementada por estas vistas |
+| Lenguaje y framework | PHP 8.4, Laravel 13, Blade | PHP 8.4.25; framework instalado de la serie 13 |
+| BD | MariaDB | Metadatos leídos en MariaDB 12.3.3; sin cambios de esquema en Fase 00 |
+| Modelo | 32 modelos y 35 migraciones previas | `migrate:status`: 35 Ran; nueva migración de vigencia preparada, no aplicada en MariaDB |
+| Permisos | `users` ↔ `usuario_rol` ↔ `roles` ↔ `rol_permiso` ↔ `permisos`, ámbito institución | Modelos, middleware y servicios existentes; integración completa por recurso pendiente |
+| Registro | Autorregistro de participantes y correo verificado; sin roles privilegiados ni INE/CURP general | Política aprobada; rutas pendientes. Se conserva servicio interno de solicitudes |
 | Diseño | Cinco verdes + fuentes de Google + SVG, sin emojis | Guía de diseño acordada |
 | Docker | Despliegue reproducible futuro | Propuesta; no incluido ni probado |
 | Frontend | Componentes Blade reutilizables en vez de cinco vistas duplicadas | Plantillas de ejemplo incluidas en este paquete |
@@ -79,23 +81,24 @@ Roles propuestos: **Administrador, Coordinador, Recepción, Instructor, Particip
 - Administrador: instituciones, cuentas, revisión/activación de solicitudes, roles/permisos y auditoría.
 - Coordinador: cursos, ediciones, grupos, instructores, módulos, actividades, criterios y sesiones.
 - Recepción: requisitos, inscripciones, lista de espera y verificación manual de pagos si se autoriza.
-- Instructor: grupos asignados, asistencias, revisión de entregas y evaluaciones.
+- Instructor: mentor virtual de grupos asignados, sesiones por enlaces externos, asistencia cuando aplique, revisión y retroalimentación.
 - Participante: catálogo, inscripciones, pagos, aula virtual, entregas, exámenes, progreso y constancias.
 
 Una misma vista puede mostrar distintas acciones según permisos. **Una ruta privada debe exigir autenticación y autorización real**, independientemente de los botones visibles.
 
 ## 6. Reglas centrales de negocio
 
-1. **Registro controlado:** visitante envía solicitud y documentos; autoridad revisa; sistema crea o vincula cuenta con rol permitido y envía enlace de activación. Nunca mandar contraseñas por correo.
+1. **Autorregistro de participantes:** nombre, correo y contraseña, con verificación antes de funciones privadas. Sin documentos personales generales ni selección pública de privilegios. Personal e instructores se administran internamente; conservar solicitudes especiales e históricos. Nunca mandar contraseñas por correo.
 2. **Unicidad de inscripción:** un participante no puede tener dos inscripciones al mismo grupo.
 3. **Cupo:** validación de cupo y reservas de pago con transacción/bloqueo para evitar carreras.
-4. **Requisitos:** deben cumplirse antes de confirmar inscripción.
+4. **Requisitos:** se configuran por curso y deben cumplirse antes de confirmar inscripción; evidencia externa con revisión humana cuando corresponda.
 5. **Lista de espera:** orden, oferta, vencimiento y cancelación controlados.
 6. **Pagos:** confirmados por pasarela con webhook verificado o por personal autorizado. Los correos son una notificación, no la prueba financiera.
-7. **Aprendizaje:** modalidades autogestionadas y con acompañamiento; contenidos y actividades por módulos, entregas y evaluaciones.
-8. **Constancias:** se generan solo si cumplen los criterios de asistencia, actividades, calificación y plazos cuando correspondan.
+7. **Aprendizaje:** ambas modalidades virtuales; formativos ilimitados y finales por módulo con tres intentos por ciclo predeterminados y tiempo configurable. Otro ciclo exige reforzamiento posterior al cierre. Conservar versiones y notas aprobadas.
+8. **Constancias internas:** requieren módulos y criterios configurados, con asistencia solo si el curso acompañado la exige. La emisión aún está pendiente; no implican reconocimiento oficial.
 9. **Multiinstitución:** ninguna institución puede ver o modificar datos privados de otra sin autorización.
 10. **Auditoría:** operaciones relevantes en bitácora; eliminación física de datos de negocio nunca por defecto.
+11. **Vigencia:** acceso indefinido o limitado por edición; 30 días predeterminados solo para gratuitos limitados y prórroga gratuita opcional de 14 días una vez. Vencer bloquea nuevas acciones sujetas a plazo, conserva historial y nunca genera cargos automáticos.
 
 ## 7. Estructura de archivos del paquete Blade
 
@@ -161,7 +164,7 @@ Antes de modificar el proyecto:
 4. **Reutilizar layouts y componentes Blade**. No duplicar cinco veces la misma página para cambiar botones por rol.
 5. Mantener los cinco colores exactos, Manrope, Noto Serif opcional y solo iconos SVG.
 6. Elegir nombres coherentes con los usados en migraciones: `cursos`, `ediciones`, `grupos`, `inscripciones`, `pagos`, etc.; `users` y `password_reset_tokens` se mantienen como Laravel.
-7. No inventar sedes físicas ni registro libre: todo es capacitación virtual con altas controladas.
+7. Mantener capacitación virtual y autorregistro de participantes con correo verificado; nunca permitir altas públicas de roles privilegiados.
 8. No introducir dependencias ni plugins sin justificarlo; preferir herramientas ya presentes.
 9. Jamás subir `.env`, claves, documentos personales, `vendor/` o `node_modules/`.
 10. **Nunca ejecutar `migrate:fresh`, `migrate:reset`, `db:wipe` o `docker compose down -v`** en BD con datos importantes sin respaldo y autorización expresa.
@@ -170,7 +173,7 @@ Antes de modificar el proyecto:
 
 ## 10. Documentos pendientes de inspección
 
-Para pasar de esta guía propuesta al README **definitivo** hace falta revisar la carpeta de documentos actual, los prototipos reales exportados de Stitch, los modelos, los controladores y las rutas vigentes. Este README no certifica haberlos inspeccionado ni garantiza que el estado actual de GitHub coincida con el paquete de migraciones disponible.
+La Fase 00 inspeccionó documentación normativa, modelos implicados, migraciones, servicios, acceso institucional, provider, rutas y configuración de pruebas del checkout local. No certifica el estado de GitHub, los prototipos completos de Stitch ni documentos externos de Memoria. Consultar la matriz de auditoría antes de presentar una política como funcional.
 
 ## 11. Fuentes internas revisadas
 
