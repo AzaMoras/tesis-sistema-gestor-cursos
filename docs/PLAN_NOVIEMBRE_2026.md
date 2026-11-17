@@ -2,15 +2,18 @@
 
 Este archivo es un plan tentativo, no evidencia de implementación. Ajustarlo después de auditar el repositorio.
 
+Revisión del 10/11/2026: seguir el [plan incremental aprobado](PLAN_DE_IMPLANTACION.md): Fase 00 (documentación, vigencia y contratos académicos), login/logout, autorregistro con verificación y luego flujos académicos. Véase [auditoría y pendientes](AUDITORIA_FASE_00.md). Login/logout no requiere terminar antes las interfaces de pagos o exámenes. Las fechas siguientes continúan como objetivos, no certificaciones de entrega.
+
 | Fecha | Entrega propuesta | Estado |
 |---|---|---|
 | 05-06 nov | Auditoría de Laravel, confirmación de modalidad 100 % virtual, revisión de archivos de contexto | Pendiente |
 | 09 nov | Landing pública, navegación, contacto, privacidad y prospectos | Pendiente |
-| 10-11 nov | Autenticación, recuperación de cuenta, roles y panel privado | Pendiente |
+| 10 nov | Fase 00: auditoría, políticas v2, vigencia y contratos académicos | Parcial: componentes y documentación; despliegue y flujos pendientes |
+| 10-11 nov | Login/logout; después autorregistro de participantes con verificación, recuperación y panel privado | Pendiente |
 | 12-13 nov | Catálogo público con filtros y detalle de curso/edición/grupo | Pendiente |
 | 16 nov | CRUD de cursos, categorías y ediciones | Pendiente |
 | 17 nov | Grupos y sesiones virtuales, asignación de instructores, traslapes | Pendiente |
-| 18 nov | Solicitudes de acceso y validación de requisitos | Pendiente |
+| 18 nov | Solicitudes especiales y prerrequisitos por curso; sin documentos generales de registro | Pendiente |
 | 19-20 nov | Inscripciones, cupo virtual, lista de espera, cancelaciones y ofertas con vencimiento | Pendiente |
 | 23 nov | Asistencia virtual y requisitos de constancias | Pendiente |
 | 24 nov | Módulos, actividades, exámenes y evidencias | Pendiente |

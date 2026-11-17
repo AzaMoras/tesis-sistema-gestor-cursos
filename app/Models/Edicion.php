@@ -32,6 +32,8 @@ class Edicion extends Model
             'precio' => 'decimal:2',
             'asistencia_minima' => 'decimal:2',
             'calificacion_minima' => 'decimal:2',
+            'duracion_acceso_dias' => 'integer',
+            'prorroga_gratuita_dias' => 'integer',
         ];
     }
 

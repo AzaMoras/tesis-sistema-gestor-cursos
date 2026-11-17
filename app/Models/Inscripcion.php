@@ -21,6 +21,10 @@ class Inscripcion extends Model
             'reserva_vence_at' => 'datetime',
             'fecha_inscripcion' => 'datetime',
             'fecha_cancelacion' => 'datetime',
+            'acceso_inicia_at' => 'immutable_datetime',
+            'acceso_vence_at' => 'immutable_datetime',
+            'prorroga_gratuita_dias' => 'integer',
+            'prorroga_gratuita_aplicada_at' => 'immutable_datetime',
         ];
     }
 
