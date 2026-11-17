@@ -32,6 +32,7 @@
                 </div>
                 <button class="btn btn-primary" type="submit">Iniciar sesión</button>
             </form>
+            <p>¿Aún no tienes cuenta? <a href="{{ route('register') }}">Crea tu cuenta de participante</a>.</p>
         </div>
     </section>
 @endsection

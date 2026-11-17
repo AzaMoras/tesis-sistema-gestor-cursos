@@ -34,7 +34,7 @@ class InicioPublicoTest extends TestCase
         foreach ($links as $link) {
             $href = $link->getAttribute('href');
             $path = parse_url($href, PHP_URL_PATH) ?: '/';
-            self::assertContains($path, ['/', '/login'], $href);
+            self::assertContains($path, ['/', '/login', '/register'], $href);
             $fragment = parse_url($href, PHP_URL_FRAGMENT);
             if ($fragment !== null) {
                 self::assertSame(1, $xpath->query('//*[@id="'.$fragment.'"]')->length, $href);
@@ -92,9 +92,9 @@ class InicioPublicoTest extends TestCase
         }
     }
 
-    public function test_no_se_habilita_registro_publico(): void
+    public function test_registro_publico_disponible_y_validado(): void
     {
-        $this->get('/register')->assertNotFound();
-        $this->post('/register', [])->assertNotFound();
+        $this->get('/register')->assertOk()->assertViewIs('auth.register');
+        $this->post('/register', [])->assertSessionHasErrors(['name', 'email', 'password']);
     }
 }

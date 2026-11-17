@@ -4,12 +4,15 @@
 
 ## Cuentas, identidad y autorización
 
+**Ajuste temporal aprobado el 17/11/2026:** la primera versión no exige verificación de correo ni depende de SMTP. `auth.verification.enabled`, deshabilitada por defecto, permite restablecer el flujo futuro. Este ajuste sustituye la obligatoriedad previa mientras esté apagada.
+
 - **RN-REG-01:** registro público de participantes mediante nombre, correo y contraseña; otros datos solo si son necesarios y justificados.
-- **RN-REG-02:** correo único normalizado y verificado antes de habilitar funciones privadas de participante. Si no está verificado, mostrar ruta/aviso para verificar; prevenir enumeración de correos cuando corresponda.
+- **RN-REG-02:** exigir formato válido y unicidad del correo normalizado. Para la primera versión, crear la cuenta `activa`, con perfil Participante y `email_verified_at = null`, y permitir sesión inmediata. Con `auth.verification.enabled = false` no exigir verificación para el acceso de participante, enviar notificaciones de verificación ni mostrar avisos/botones que la exijan; sus rutas permanecen inhabilitadas. Mantener controles de autenticación, estado de cuenta, rol, permiso, institución y propiedad. Con la opción habilitada, exigir correo verificado y ofrecer el flujo nativo de verificación. El estado de cuenta y la verificación son independientes; nunca completar artificialmente `email_verified_at`. Prevenir enumeración de correos cuando corresponda.
 - **RN-REG-03:** nunca aceptar `role`, `institution_id`, `permissions`, `account_status` o `email_verified_at` directamente de datos confiados al navegador como privilegios. Asignarlos únicamente desde reglas del servidor y en contexto institucional autorizado.
 - **RN-REG-04:** usar `user_id` como identidad técnica; nombres repetidos son permitidos. No prometer prueba de identidad física ni detección perfecta de multicuentas.
 - **RN-REG-05:** no pedir INE, CURP ni documentos para el registro general. Evidencias de prerrequisitos se solicitan por curso específico, se minimizan y se almacenan privadamente.
 - **RN-REG-06:** conservar la gestión administrativa del personal y asignación de instructores; el público nunca elige rol privilegiado.
+- **RN-REG-07:** el alta pública no asigna institución ni filas en `usuario_rol`, que exige ámbito institucional. El perfil Participante no concede permisos institucionales. Conservar límites de registro y login en ambos modos. No implementar recuperación de contraseña mediante correo sin servicio de envío configurado.
 
 ## Cursos, prerrequisitos e inscripción
 

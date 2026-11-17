@@ -16,10 +16,12 @@ Antes de proponer cambios, consulta según corresponda:
 - Políticas aprobadas el 10/11/2026: `docs/DECISIONES_PRODUCTO_V2.md` y `docs/REGLAS_NEGOCIO_V2.md` prevalecen sobre reglas anteriores contradictorias. Consultar `docs/AUDITORIA_FASE_00.md` para estado real y trazabilidad.
 
 ## Límites obligatorios
+- Ajuste temporal aprobado el 17/11/2026: `auth.verification.enabled = false` por defecto para la primera versión, sin SMTP. Esta decisión prevalece sobre la obligación previa de verificar correo; conservar el flujo nativo para reactivarlo explícitamente.
 - Nunca implementar sedes docentes, aulas, asistencia presencial o inventario/préstamo de equipos físicos. Las sedes registradas representan infraestructura o metadatos administrativos, no escuelas físicas.
 - Los cursos pueden ser autogestionados o acompañados por instructor; ambos son virtuales.
 - Mantener una interfaz compartida, con contenido y acciones permitidos según roles y permisos, sin duplicar todas las vistas por rol.
-- Permitir autorregistro de participantes con nombre, correo y contraseña; exigir verificación de correo antes de sus funciones privadas. Nunca crear cuentas privilegiadas desde registro público ni confiar en institución, rol, estado o verificación enviados por navegador. Su implementación HTTP sigue pendiente.
+- Permitir autorregistro con nombre, correo válido único normalizado y contraseña segura. Crear cuenta `activa` y perfil Participante sin roles ni institución; conservar `email_verified_at = null` y permitir sesión inmediata. Con `auth.verification.enabled = false` no enviar verificación, exigirla ni mostrar avisos/botones para verificar. Al habilitarla, restaurar el flujo nativo de Laravel antes del acceso de participante. Mantener autenticación, cuenta activa, roles, permisos e institución como controles independientes. Nunca confiar en privilegios enviados por navegador ni simular correo verificado.
+- No implementar recuperación de contraseña por correo mientras no exista servicio de envío configurado. No modificar `.env` para habilitar servicios durante tareas locales.
 - No exigir INE ni CURP para el registro general; los prerrequisitos se justifican por curso. Conservar solicitudes y evidencias históricas con acceso restringido.
 - Vigencia configurable por edición: 30 días como predeterminado solo para cursos gratuitos limitados, prórroga gratuita opcional de 14 días una vez. Sin cargos automáticos; vencer no borra progreso.
 - Formativos ilimitados; finales por módulo con tres intentos por ciclo y tiempo configurable, dentro de políticas institucionales. Un nuevo ciclo exige reforzamiento posterior al cierre. Conservar intentos, versiones y módulos acreditados; constancias internas.

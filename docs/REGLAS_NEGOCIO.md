@@ -2,7 +2,7 @@
 
 Las [reglas v2 aprobadas el 10/11/2026](REGLAS_NEGOCIO_V2.md) son la fuente funcional vigente y prevalecen ante contradicciones. La [matriz de Fase 00](AUDITORIA_FASE_00.md) identifica cobertura real y pendientes.
 
-1. Un visitante puede crear una cuenta de participante con datos mínimos y correo verificado antes de funciones privadas; nunca elige privilegios ni institución ajena desde el navegador.
+1. Un visitante puede crear una cuenta de participante con nombre, correo válido único normalizado y contraseña segura, sin privilegios ni institución asignada. Ajuste temporal aprobado el 17/11/2026: la primera versión permite sesión inmediata con cuenta `activa`, `email_verified_at = null` y `auth.verification.enabled = false`; no envía ni exige verificación ni muestra avisos que la requieran. La verificación nativa se conserva para habilitarla explícitamente en el futuro. Autenticación, estado de cuenta, roles, permisos e instituciones siguen siendo obligatorios según cada recurso. No implementar recuperación por correo mientras no exista servicio de envío configurado.
 2. El personal autorizado administra cuentas de gestión, instructores y solicitudes especiales. El registro general no exige INE ni CURP; las evidencias de prerrequisitos se revisan por curso y se almacenan privadamente.
 3. El acceso se decide del lado del servidor según permisos, institución y propiedad de datos. Ocultar controles visuales no sustituye autorización.
 4. Una persona no puede mantener dos inscripciones al mismo grupo. Validar en servicios y aplicar restricciones de base de datos cuando proceda.

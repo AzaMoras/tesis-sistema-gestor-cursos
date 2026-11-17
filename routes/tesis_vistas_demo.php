@@ -12,7 +12,7 @@ Route::prefix('_demo-tesis')->group(function (): void {
     Route::middleware(['auth:web', 'cuenta.activa'])->group(function (): void {
         Route::view('/estudiante/{institucion?}', 'tesis.estudiante.inicio')
             ->whereNumber('institucion')
-            ->middleware('participante');
+            ->middleware(['verified', 'participante']);
 
         // El portal de gestión es compartido: los cuatro roles son alternativas.
         // Las futuras acciones deben añadir permiso:<clave> según permisos.clave.

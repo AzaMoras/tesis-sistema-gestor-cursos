@@ -10,7 +10,18 @@ El público inicial son centros de capacitación, empresas y pequeñas organizac
 
 Las [decisiones v2](DECISIONES_PRODUCTO_V2.md) y [reglas v2](REGLAS_NEGOCIO_V2.md) sustituyen restricciones anteriores de autorregistro. La [auditoría de Fase 00](AUDITORIA_FASE_00.md) distingue implementación de propuestas.
 
+## Ajuste temporal de acceso (17/11/2026)
+
+Ajuste temporal aprobado el 17/11/2026: la primera versión permite autorregistro
+y sesión inmediata sin verificar correo ni depender de SMTP. Las cuentas son
+`activa`, con `email_verified_at = null`, sin roles ni institución asignados.
+`auth.verification.enabled = false` deshabilita envío, pantallas y exigencia de
+verificación; el flujo nativo se conserva para reactivarlo. Permanecen los
+controles de autenticación y autorización. No se incorpora recuperación de
+contraseña por correo sin servicio de envío configurado.
+
 ## Modalidad definitiva
+
 **Todos los cursos, grupos, sesiones y actividades docentes serán 100 % virtuales.**
 - Curso autogestionado: contenidos y actividades accesibles según las fechas y condiciones configuradas.
 - Curso acompañado: actividades y sesiones virtuales con instructor.
