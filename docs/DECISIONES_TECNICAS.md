@@ -7,7 +7,7 @@
 - Interfaz: español, responsive, accesibilidad básica, paleta verde y Manrope.
 - Tema oscuro: incluir un botón de cambio visible fuera del menú de opciones.
 - No usar emojis en ningún archivo de código o interfaz; utilizar iconos SVG.
-- Registro público: autorregistro de participantes con correo verificado y sin privilegios; administración interna de personal y solicitudes especiales. No exigir INE/CURP general.
+- Registro público: autorregistro sin privilegios ni institución y sin INE/CURP general; administración interna de personal y solicitudes especiales. Ajuste temporal del 17/11/2026: `auth.verification.enabled` se configura mediante `EMAIL_VERIFICATION_ENABLED` y vale `false` por defecto. La primera versión admite sesión inmediata con cuenta `activa` y correo sin verificar, sin enviar notificaciones ni exigir verificación. Al habilitarla, el alias `verified` delega en el middleware nativo de Laravel y se restauran pantallas/envío. No implementar recuperación por correo sin servicio configurado.
 - Un conjunto de vistas compartidas, habilitando opciones según rol y permisos.
 - Sedes: información administrativa o de infraestructura; no sedes educativas físicas.
 - Documentación: Memoria en LaTeX versionada con Git.

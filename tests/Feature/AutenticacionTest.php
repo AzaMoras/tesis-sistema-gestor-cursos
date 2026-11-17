@@ -70,9 +70,10 @@ class AutenticacionTest extends ServiceTestCase
 
     public function test_cuenta_sin_institucion_y_correo_pendiente_ve_aviso_neutral(): void
     {
+        config(['auth.verification.enabled' => false]);
         $user = User::factory()->unverified()->create(['estado_cuenta' => 'activa']);
         $this->login($user)->assertRedirect('/mi-cuenta');
-        $this->get('/mi-cuenta')->assertOk()->assertSee('Tu correo está pendiente de verificación');
+        $this->get('/mi-cuenta')->assertOk()->assertDontSee('Tu correo está pendiente de verificación');
         $this->get('/_demo-tesis/estudiante')->assertForbidden();
         $this->get('/_demo-tesis/privado')->assertForbidden();
         self::assertSame(0, $user->roles()->count());

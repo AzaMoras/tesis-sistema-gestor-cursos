@@ -4,6 +4,12 @@ use App\Models\User;
 
 return [
 
+    // Primera versión: acceso sin depender de un servicio de correo.
+    'verification' => [
+        'enabled' => env('EMAIL_VERIFICATION_ENABLED', false),
+        'expire' => 60,
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Authentication Defaults

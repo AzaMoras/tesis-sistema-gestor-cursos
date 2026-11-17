@@ -10,6 +10,8 @@ Aula Verde es una aplicación web para gestionar **exclusivamente cursos virtual
 
 ## Decisiones aprobadas
 
+**Ajuste temporal aprobado el 17/11/2026:** para la primera versión, `auth.verification.enabled = false` permite registro y sesión inmediatos sin SMTP, manteniendo el correo sin verificar. No se envían notificaciones ni se exige verificación; tampoco se habilita recuperación de contraseña por correo sin servicio configurado. La opción futura restaura la verificación nativa, sin alterar estado de cuenta ni autorizaciones institucionales. Este ajuste prevalece sobre la exigencia original de correo verificado.
+
 | ID | Decisión | Regla |
 |---|---|---|
 | DP-01 | Autorregistro | Cualquier visitante puede solicitar crear su propia cuenta mediante datos mínimos y correo verificable. No se exigen INE ni CURP como condición general. |
@@ -31,14 +33,14 @@ Aula Verde es una aplicación web para gestionar **exclusivamente cursos virtual
 ## Límites y aclaraciones
 
 - No hay reconocimiento oficial automático de constancias ni integración de cédula profesional confirmada. Las validaciones externas se investigarán solo si un curso realmente lo exige y la fuente permite integraciones legítimas.
-- No se promete impedir cuentas múltiples de una misma persona sin documentación invasiva. Se emplean correo único, verificación y límites de abuso.
+- No se promete impedir cuentas múltiples de una misma persona sin documentación invasiva. Se emplean correo único y límites de abuso; la verificación se conserva como función futura configurable, deshabilitada en la primera versión.
 - No se afirma que el sistema ya tenga operativas estas políticas: se debe implementar por etapas y demostrar con pruebas.
 - Política de 30 + 14 días: propuesta predeterminada para **curso gratuito limitado**, no para cursos gratuitos permanentes ni para todos los cursos pagados.
 - Un instructor no se convierte automáticamente en autor de cualquier curso: permisos institucionales y asignaciones son obligatorios.
 
 ## Conflictos con decisiones anteriores
 
-- Sustituir la obligatoriedad de creación administrativa de cuentas de participante por autorregistro con correo verificado. Conservar administración interna para roles administrativos e instructores, solicitudes especiales y revisión de evidencias académicas externas.
+- Sustituir la obligatoriedad de creación administrativa de participantes por autorregistro. La exigencia de correo verificado queda temporalmente deshabilitada según el ajuste del 17/11/2026; no se crean roles ni instituciones en el alta pública. Conservar administración interna para roles administrativos e instructores, solicitudes especiales y revisión de evidencias académicas externas.
 - No solicitar documentos personales generales para entrar a la plataforma. Evitar eliminar históricos de solicitudes/documentos sin auditoría de datos; restringir su acceso y planificar su retención.
 - Mantener los cinco roles: administrador, coordinador, recepción, instructor y participante.
 
