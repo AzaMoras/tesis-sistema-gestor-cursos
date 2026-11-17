@@ -10,6 +10,9 @@
     <a class="skip-link" href="#contenido-principal">Saltar al contenido</a>
     @include('partials.navegacion-publica')
     <main id="contenido-principal" tabindex="-1">
+        @if (session('status'))
+            <div class="container" role="status">{{ session('status') }}</div>
+        @endif
         @yield('contenido')
     </main>
     @include('partials.pie-publico')
