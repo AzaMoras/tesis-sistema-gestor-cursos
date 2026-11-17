@@ -7,10 +7,9 @@ Route::prefix('_demo-tesis')->group(function (): void {
     Route::view('/', 'tesis.inicio');
     Route::view('/cursos', 'tesis.catalogo');
 
-    // cuenta.activa también exige autenticación y devuelve 401 sin depender
-    // de una ruta login, que todavía no existe en este proyecto.
+    // Prototipos privados: autenticación y autorización institucional en servidor.
     // Sin institución explícita se exige una única institución activa asignada.
-    Route::middleware('cuenta.activa')->group(function (): void {
+    Route::middleware(['auth:web', 'cuenta.activa'])->group(function (): void {
         Route::view('/estudiante/{institucion?}', 'tesis.estudiante.inicio')
             ->whereNumber('institucion')
             ->middleware('participante');
