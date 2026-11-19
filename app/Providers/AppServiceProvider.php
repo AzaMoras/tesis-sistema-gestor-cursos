@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\Soporte\ReglasOperacion;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -16,7 +17,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(ReglasOperacion::class, fn () => new ReglasOperacion(
+            estados: config('operacion.estados'),
+            apertura: config('operacion.apertura'),
+            cupoNuloIlimitado: config('operacion.cupo_nulo_ilimitado'),
+        ));
     }
 
     /**

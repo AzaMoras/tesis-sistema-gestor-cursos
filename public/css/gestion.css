@@ -1,0 +1,33 @@
+/* El encabezado permanece en el flujo de gestión para no cubrir controles. */
+.pagina-gestion .public-header{position:static}
+.gestion{padding-block:28px;min-height:60vh;overflow-wrap:anywhere}
+.gestion h1{font-size:clamp(26px,4vw,36px);margin-bottom:12px}
+.gestion-nav{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-block:18px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.gestion-nav a{padding:8px 12px;border-radius:8px}
+.gestion-nav a:hover{background:var(--surface-soft)}
+.gestion-nav [aria-current=page]{font-weight:800;background:var(--pale);text-decoration:underline;text-underline-offset:5px}
+.gestion-toolbar{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-block:18px}
+.gestion-filtros{display:flex;gap:14px;align-items:end;flex-wrap:wrap;padding:16px;background:var(--surface-soft);border:1px solid var(--line);border-radius:12px;margin-block:18px}
+.gestion-filtros label{display:block;font-size:.875rem;font-weight:700;margin-bottom:6px}
+.gestion-filtros>div:first-child{flex:1;min-width:180px}
+.gestion-lista{display:grid;gap:14px;list-style:none;padding:0;margin-block:20px}
+.gestion-registro{padding:20px;min-width:0;margin:0;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.gestion-registro-cabecera{display:flex;align-items:start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+.gestion-registro h2{font-size:1.25rem;margin:0;flex:1;min-width:160px}
+.gestion-estado{display:inline-flex;padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--surface-soft);font-size:.8rem;font-weight:800}
+.gestion-estado[data-estado=publicado],.gestion-estado[data-estado=abierta],.gestion-estado[data-estado=activa]{background:var(--pale);color:var(--palm-leaf)}
+.gestion-secundaria{display:grid;gap:6px;color:var(--muted);font-size:.94rem}
+.gestion-identificador{font-size:.8rem}
+.gestion-acciones{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+.gestion-acciones form{margin:0;display:flex}.gestion .gestion-acciones .btn{min-height:44px;padding:9px 14px}
+.gestion-formulario{max-width:760px;margin-top:20px}.gestion-formulario fieldset{display:grid;gap:22px;min-width:0;border:1px solid var(--line);border-radius:12px;padding:24px;background:var(--surface)}
+.gestion select,.gestion textarea,.gestion-filtros input{width:100%;max-width:100%;min-width:0;min-height:46px;border:1px solid var(--muted);border-radius:8px;background:var(--page);color:var(--evergreen);font:inherit;padding:10px 12px}
+.gestion :focus-visible{outline:3px solid var(--focus);outline-offset:4px}
+.gestion :is(input,textarea)[readonly],.gestion select:disabled{background:var(--surface-soft);color:var(--muted)}
+.gestion fieldset:disabled{opacity:.9}.gestion .btn svg{flex-shrink:0}.gestion nav[role=navigation]{margin-block:20px}
+.gestion-ayuda{font-size:.875rem;color:var(--muted);margin-top:8px}.gestion-aviso{padding:14px 16px;border-left:4px solid var(--pine-teal);background:var(--surface-soft);max-width:760px}
+.gestion-volver{margin-top:20px}
+.gestion-detalles{display:grid;grid-template-columns:minmax(130px,1fr) minmax(0,3fr);gap:14px 20px;max-width:900px;padding:24px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.gestion-detalles dt{font-weight:800}.gestion-detalles dd{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+@media(max-width:600px){.gestion-detalles{grid-template-columns:minmax(0,1fr);gap:8px;padding:16px}.gestion-detalles dd{padding-bottom:12px;border-bottom:1px solid var(--line)}}
+@media(max-width:600px){.gestion-formulario fieldset,.gestion-registro{padding:16px}.gestion-filtros>div{width:100%}.gestion-toolbar{align-items:stretch}.gestion-toolbar>[data-gestion-crear]{width:100%}.gestion-nav{gap:4px}.gestion-nav a{padding:8px}.gestion-acciones .btn{flex:1}.gestion-acciones form{width:100%}.gestion-acciones form .btn{width:100%}}

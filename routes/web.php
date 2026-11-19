@@ -28,3 +28,4 @@ Route::middleware(['auth:web', 'cuenta.activa', VerificacionCorreoHabilitada::cl
 });
 
 require __DIR__.'/tesis_vistas_demo.php';
+require __DIR__.'/gestion.php';
