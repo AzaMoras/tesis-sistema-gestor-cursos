@@ -13,6 +13,7 @@
 /.zed
 /auth.json
 /node_modules
+/database/aula-verde-demo.sqlite*
 /public/build
 /public/hot
 /public/storage

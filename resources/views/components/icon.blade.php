@@ -18,6 +18,9 @@
         @case('graduation') <path d="m2 10 10-5 10 5-10 5-10-5Z"/><path d="M6 12v5c4 3 8 3 12 0v-5M22 10v7"/> @break
         @case('menu') <path d="M4 6h16M4 12h16M4 18h16"/> @break
         @case('search') <circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/> @break
+        @case('eye') <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/> @break
+        @case('edit') <path d="m16 3 5 5-12 12-6 1 1-6L16 3ZM14 5l5 5"/> @break
+        @case('plus') <path d="M12 5v14M5 12h14"/> @break
         @case('file') <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/> @break
         @case('credit-card') <rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/> @break
         @default <circle cx="12" cy="12" r="9"/> @break
