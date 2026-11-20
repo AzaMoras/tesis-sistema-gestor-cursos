@@ -4,11 +4,14 @@ namespace Tests\Feature;
 
 use DOMDocument;
 use DOMXPath;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
 class InicioPublicoTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_inicio_es_publico_y_muestra_la_landing_sin_oferta_ficticia(): void
     {
         $this->get(route('inicio'))
@@ -16,7 +19,7 @@ class InicioPublicoTest extends TestCase
             ->assertViewIs('publico.inicio')
             ->assertSee('Aprende algo nuevo.')
             ->assertSee('FORMACIÓN 100 % VIRTUAL')
-            ->assertSee('El catálogo aún no está disponible.')
+            ->assertSee('Todavía no hay cursos publicados.')
             ->assertSee('canales oficiales de contacto')
             ->assertDontSee('Diseño web desde cero')
             ->assertDontSee('64 % completado')
@@ -34,7 +37,7 @@ class InicioPublicoTest extends TestCase
         foreach ($links as $link) {
             $href = $link->getAttribute('href');
             $path = parse_url($href, PHP_URL_PATH) ?: '/';
-            self::assertContains($path, ['/', '/login', '/register'], $href);
+            self::assertContains($path, ['/', '/cursos', '/login', '/register'], $href);
             $fragment = parse_url($href, PHP_URL_FRAGMENT);
             if ($fragment !== null) {
                 self::assertSame(1, $xpath->query('//*[@id="'.$fragment.'"]')->length, $href);

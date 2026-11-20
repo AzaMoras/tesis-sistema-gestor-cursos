@@ -3,7 +3,7 @@
         <a class="brand" href="{{ route('inicio') }}"><span class="brand-mark" aria-hidden="true"><x-icon name="book" :size="19" /></span><span>Aula Verde</span></a>
         <div class="desktop-links">
             <a href="{{ route('inicio') }}">Inicio</a>
-            <a href="{{ route('inicio') }}#cursos">Cursos</a>
+            <a href="{{ route('cursos.index') }}">Cursos</a>
             <a href="{{ route('inicio') }}#como-funciona">Cómo funciona</a>
             <a href="{{ route('inicio') }}#contacto">Contacto</a>
         </div>
@@ -15,7 +15,7 @@
             <summary aria-label="Mostrar navegación"><x-icon name="menu" :size="22" /></summary>
             <div class="mobile-links">
                 <a href="{{ route('inicio') }}">Inicio</a>
-                <a href="{{ route('inicio') }}#cursos">Cursos</a>
+                <a href="{{ route('cursos.index') }}">Cursos</a>
                 <a href="{{ route('inicio') }}#como-funciona">Cómo funciona</a>
                 <a href="{{ route('inicio') }}#contacto">Contacto</a>
             </div>

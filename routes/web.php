@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CatalogoCursosController;
 use App\Http\Controllers\InicioController;
 use App\Http\Controllers\RegistroController;
 use App\Http\Controllers\SesionController;
@@ -8,6 +9,8 @@ use App\Http\Middleware\VerificacionCorreoHabilitada;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', InicioController::class)->name('inicio');
+Route::get('/cursos', [CatalogoCursosController::class, 'index'])->name('cursos.index');
+Route::get('/cursos/{curso}', [CatalogoCursosController::class, 'show'])->whereNumber('curso')->name('cursos.show');
 
 Route::middleware('guest:web')->group(function (): void {
     Route::get('/register', [RegistroController::class, 'create'])->name('register');
