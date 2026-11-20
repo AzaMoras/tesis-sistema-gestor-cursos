@@ -2,6 +2,10 @@
 
 @section('clase_cuerpo', 'sitio-publico')
 
+@push('estilos')
+    <link rel="stylesheet" href="{{ asset('css/catalogo.css') }}">
+@endpush
+
 @push('scripts_cabecera')
     <script src="{{ asset('js/tema-publico.js') }}"></script>
 @endpush

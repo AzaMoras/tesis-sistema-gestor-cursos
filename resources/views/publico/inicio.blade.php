@@ -10,7 +10,7 @@
                 <h1 id="presentacion-titulo">Aprende algo nuevo.<br><em>Abre tu próximo camino.</em></h1>
                 <p class="hero-lead">Da espacio a lo que quieres aprender, desde donde estés. Conoce las opciones de formación virtual y elige entre estudiar de forma autogestionada o con la orientación de un instructor.</p>
                 <div class="button-row">
-                    <a class="btn btn-primary" href="#cursos">Descubre cómo aprender <x-icon name="arrow-right" :size="18" /></a>
+                    <a class="btn btn-primary" href="{{ route('cursos.index') }}">Explorar cursos <x-icon name="arrow-right" :size="18" /></a>
                     <a class="btn btn-outline" href="#como-funciona">Conoce los pasos</a>
                 </div>
                 <div class="hero-mini-stats"><span><x-icon name="check" :size="16" /> Sin traslados</span><span><x-icon name="check" :size="16" /> Formación en línea</span></div>
@@ -37,9 +37,9 @@
 
     <section class="process-section" id="como-funciona" aria-labelledby="proceso-titulo">
         <div class="container section-space">
-            <div class="section-heading"><p class="eyebrow">PASO A PASO</p><h2 id="proceso-titulo">Tu próximo paso empieza aquí</h2><p>Cuando se abra la oferta de cursos, este será tu recorrido. El catálogo y las solicitudes todavía no están disponibles.</p></div>
+            <div class="section-heading"><p class="eyebrow">PASO A PASO</p><h2 id="proceso-titulo">Tu próximo paso empieza aquí</h2><p>Empieza por explorar los cursos publicados. Las solicitudes de inscripción se habilitarán más adelante.</p></div>
             <ol class="feature-grid process-list">
-                <li class="feature-card"><h3>Consulta la oferta</h3><p>Revisa objetivos, contenidos, requisitos y fechas de cada curso cuando se publique el catálogo.</p></li>
+                <li class="feature-card"><h3>Consulta la oferta</h3><p>Revisa los objetivos, requisitos y fechas publicados para cada curso.</p></li>
                 <li class="feature-card"><h3>Solicita tu acceso</h3><p>Envía tu solicitud cuando se habilite este servicio. El personal autorizado revisará tus requisitos antes de confirmar el acceso.</p></li>
                 <li class="feature-card"><h3>Comienza tu formación</h3><p>Con la inscripción confirmada, sigue las actividades y evaluaciones definidas para tu curso virtual.</p></li>
             </ol>
@@ -48,7 +48,12 @@
 
     <section class="container section-space" id="cursos" aria-labelledby="cursos-titulo">
         <div class="section-heading"><p class="eyebrow">TU SIGUIENTE OPORTUNIDAD</p><h2 id="cursos-titulo">Encuentra tu forma de aprender</h2><p>Conoce qué aprenderás, el acompañamiento que recibirás y cuánto tiempo necesitarás. Cada programa indicará sus requisitos, fechas y condiciones de inscripción.</p></div>
-        <x-catalogo-pendiente />
+        @if ($cursos->isNotEmpty())
+            <div class="catalogo-tarjetas">@foreach ($cursos as $curso)<x-curso-publico :curso="$curso" />@endforeach</div>
+        @else
+            <div class="surface-card catalog-empty"><span class="icon-bubble"><x-icon name="book" :size="26" /></span><div><h3>La próxima oportunidad está por llegar</h3><p>Todavía no hay cursos publicados. Vuelve más adelante para conocer la oferta virtual.</p></div></div>
+        @endif
+        <div class="button-row"><a class="btn btn-outline" href="{{ route('cursos.index') }}">Ver todos los cursos <x-icon name="arrow-right" :size="18" /></a></div>
     </section>
 
     <section class="container cta-section" id="contacto" aria-labelledby="contacto-titulo">
