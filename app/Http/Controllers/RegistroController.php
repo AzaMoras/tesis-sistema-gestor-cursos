@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\RegistroRequest;
 use App\Services\RegistroParticipanteService;
+use App\Services\Soporte\RetornoInscripcion;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -17,7 +18,7 @@ class RegistroController extends Controller
         return view('auth.register');
     }
 
-    public function store(RegistroRequest $request, RegistroParticipanteService $registro): RedirectResponse
+    public function store(RegistroRequest $request, RegistroParticipanteService $registro, RetornoInscripcion $retorno): RedirectResponse
     {
         $datos = $request->validated();
         $user = $registro->registrar($datos['name'], $datos['email'], $datos['password']);
@@ -34,6 +35,10 @@ class RegistroController extends Controller
                 : 'Tu cuenta fue creada. Ya puedes acceder con tu correo y contraseña.';
         } catch (TransportExceptionInterface) {
             $mensaje = 'Tu cuenta fue creada, pero no pudimos enviar el correo. Intenta reenviarlo desde esta pantalla.';
+        }
+
+        if (! $verificacionHabilitada && ($destino = $retorno->consumir($request))) {
+            return redirect($destino)->with('status', $mensaje);
         }
 
         return redirect()->route($verificacionHabilitada ? 'verification.notice' : 'cuenta')->with('status', $mensaje);

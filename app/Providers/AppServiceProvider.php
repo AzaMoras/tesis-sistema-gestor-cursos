@@ -29,6 +29,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        RateLimiter::for('inscripcion-gratuita', fn (Request $request) => [
+            Limit::perMinute(10)->by('inscripcion-usuario:'.$request->user()->getAuthIdentifier())
+                ->response(fn (Request $request, array $headers) => response('Demasiados intentos de inscripción. Espera un minuto y revisa Mis cursos antes de repetir.', 429, $headers)),
+            Limit::perMinute(30)->by('inscripcion-ip:'.$request->ip()),
+        ]);
         VerifyEmail::toMailUsing(fn (object $user, string $url) => (new MailMessage)
             ->subject('Verifica tu correo en Aula Verde')
             ->greeting('Hola, '.$user->name)

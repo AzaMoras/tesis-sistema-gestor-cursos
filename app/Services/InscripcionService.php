@@ -6,11 +6,15 @@ use App\Models\Grupo;
 use App\Models\Inscripcion;
 use App\Models\Participante;
 use App\Models\ParticipanteRequisito;
+use App\Models\Rol;
 use App\Models\User;
+use App\Models\UsuarioRol;
 use App\Services\Soporte\AuditoriaService;
 use App\Services\Soporte\AutorizacionInstitucional;
+use App\Services\Soporte\DecisionOperacionPendiente;
 use App\Services\Soporte\Importes;
 use App\Services\Soporte\ReglasOperacion;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -22,6 +26,101 @@ final class InscripcionService
         private readonly AuditoriaService $auditoria,
         private readonly ReglasOperacion $reglas,
     ) {}
+
+    /** Autorregistro: la pertenencia mínima solo se confirma junto con la inscripción. */
+    public function inscribirGratuita(User $actor, int $cursoId, int $grupoId): Inscripcion
+    {
+        return DB::transaction(function () use ($actor, $cursoId, $grupoId): Inscripcion {
+            $usuario = User::query()->lockForUpdate()->find($actor->getKey());
+            if (! $actor->exists || ! $usuario || $usuario->estado_cuenta !== 'activa') {
+                throw new AuthorizationException('Se requiere una cuenta activa.');
+            }
+            $participante = $this->perfilParticipante($usuario, true);
+            $curso = app(CatalogoCursosService::class)->cursos()->findOrFail($cursoId);
+            $this->acceso->institucion($curso->institucion_id)->newQuery()
+                ->whereKey($curso->institucion_id)->where('estado', 'activa')->sharedLock()->firstOrFail();
+            $grupo = $this->acceso->grupo($curso->institucion_id, $grupoId, true);
+            abort_unless((int) $grupo->edicion->curso_id === $cursoId, 404);
+            $this->exigirGratuidad($grupo);
+
+            // No se crea un rol global desde una petición pública.
+            $rol = Rol::query()->where('clave', 'participante')->sharedLock()->first();
+            if (! $rol) {
+                throw ValidationException::withMessages(['inscripcion' => 'La institución todavía no ha habilitado las inscripciones gratuitas. Solicita revisión institucional. No se guardaron cambios.']);
+            }
+            $asignacion = UsuarioRol::query()->where('user_id', $usuario->id)->where('rol_id', $rol->id)
+                ->where('institucion_id', $curso->institucion_id)->lockForUpdate()->first();
+            if (! $asignacion) {
+                $asignacion = new UsuarioRol;
+                $asignacion->forceFill(['user_id' => $usuario->id, 'rol_id' => $rol->id,
+                    'institucion_id' => $curso->institucion_id, 'asignado_por' => $usuario->id])->save();
+                $this->auditoria->registrar($usuario, $curso->institucion_id, 'usuario_rol.autovincular_participante', $asignacion,
+                    ['origen' => 'inscripcion_gratuita', 'rol' => 'participante', 'grupo_id' => $grupoId]);
+            }
+
+            // Conserva los bloqueos, requisitos, cupo, unicidad y bitácora del contrato original.
+            return $this->inscribir($usuario, $curso->institucion_id, $participante->id, $grupoId);
+        }, 3);
+    }
+
+    public function perfilParticipante(User $usuario, bool $bloquear = false): Participante
+    {
+        $perfil = Participante::query()->where('user_id', $usuario->id)
+            ->when($bloquear, fn ($q) => $q->lockForUpdate())->first();
+        if (! $perfil) {
+            throw ValidationException::withMessages(['participante' => 'Tu cuenta no tiene un perfil de participante activo. Solicita revisión institucional; no se creará otro perfil automáticamente.']);
+        }
+
+        return $perfil;
+    }
+
+    /** Orientación de lectura; la decisión definitiva siempre se repite bajo bloqueo. */
+    public function estadoGratuita(Grupo $grupo, ?User $usuario): array
+    {
+        if ($usuario && $usuario->estado_cuenta !== 'activa') {
+            return ['permitida' => false, 'mensaje' => 'Se necesita una cuenta activa para inscribirse.'];
+        }
+        try {
+            $participante = $usuario ? $this->perfilParticipante($usuario) : null;
+            if ($participante && ($inscripcion = $grupo->inscripciones()->where('participante_id', $participante->id)->first(['estado']))) {
+                return ['permitida' => false, 'mensaje' => 'Ya tienes una inscripción en este grupo. Estado: '.$inscripcion->estado.'. Consulta Mis cursos.'];
+            }
+            $this->exigirGratuidad($grupo);
+            $this->exigirApertura($grupo);
+            $this->exigirCupo($grupo, bloquear: false);
+            $obligatorios = $grupo->edicion->curso->requisitos()->wherePivot('obligatorio', true)->exists();
+            if ($obligatorios && ! $participante) {
+                return ['permitida' => true, 'mensaje' => 'Inicia sesión para comprobar los requisitos obligatorios antes de confirmar.'];
+            }
+            if ($participante) {
+                $this->exigirRequisitos($grupo, $participante, $grupo->edicion->curso->institucion_id, false);
+            }
+            if (! Rol::query()->where('clave', 'participante')->exists()) {
+                return ['permitida' => false, 'mensaje' => 'La institución todavía no ha habilitado las inscripciones gratuitas. Solicita revisión institucional.'];
+            }
+            $this->reglas->estado('inscripcion.confirmada');
+
+            return ['permitida' => true, 'mensaje' => 'Inscripción gratuita disponible. El cupo se volverá a comprobar al confirmar.'];
+        } catch (ValidationException $error) {
+            return ['permitida' => false, 'mensaje' => collect($error->errors())->flatten()->first()];
+        } catch (DecisionOperacionPendiente) {
+            return ['permitida' => false, 'mensaje' => 'La institución debe completar una política de inscripción antes de habilitar este grupo.'];
+        }
+    }
+
+    private function exigirGratuidad(Grupo $grupo): void
+    {
+        if (Importes::centavos($grupo->edicion->precio, 'precio') !== 0) {
+            throw ValidationException::withMessages(['precio' => 'Esta edición es de pago. Su inscripción todavía no está habilitada.']);
+        }
+        if ($grupo->cupo_maximo === null || $grupo->cupo_maximo < 1) {
+            throw ValidationException::withMessages(['cupo' => 'El grupo necesita un cupo positivo definido antes de admitir inscripciones.']);
+        }
+        if ($grupo->edicion->curso->estado !== config('operacion.publicacion.cursos')
+            || ! in_array($grupo->edicion->modalidad, array_keys(CatalogoCursosService::MODALIDADES), true)) {
+            throw ValidationException::withMessages(['curso' => 'El curso no tiene una oferta pública válida.']);
+        }
+    }
 
     public function inscribir(User $actor, int $institucionId, int $participanteId, int $grupoId): Inscripcion
     {
@@ -147,7 +246,11 @@ final class InscripcionService
                 throw ValidationException::withMessages([$tipo => 'El estado de '.$tipo.' no permite esta inscripción.']);
             }
         }
-        if ($grupo->edicion->fecha_inicio->gt($grupo->edicion->fecha_fin) || $grupo->edicion->fecha_fin->lt(today())) {
+        if ($grupo->edicion->curso->categoria?->estado !== 'activa') {
+            throw ValidationException::withMessages(['categoria' => 'La categoría del curso no está activa.']);
+        }
+        if ($grupo->edicion->fecha_inicio === null || $grupo->edicion->fecha_fin === null
+            || $grupo->edicion->fecha_inicio->gt($grupo->edicion->fecha_fin) || $grupo->edicion->fecha_fin->lt(today())) {
             throw ValidationException::withMessages(['edicion' => 'Las fechas de la edición no permiten esta operación.']);
         }
         if ($nuevaInscripcion && $grupo->edicion->cierre_inscripciones_at?->lte(now())) {
@@ -155,24 +258,28 @@ final class InscripcionService
         }
     }
 
-    private function exigirRequisitos(Grupo $grupo, Participante $participante, int $institucionId): void
+    private function exigirRequisitos(Grupo $grupo, Participante $participante, int $institucionId, bool $bloquear = true): void
     {
-        $requisitos = $grupo->edicion->curso->requisitos()->wherePivot('obligatorio', true)->lockForUpdate()->get();
+        $requisitos = $grupo->edicion->curso->requisitos()->wherePivot('obligatorio', true)
+            ->when($bloquear, fn ($q) => $q->lockForUpdate())->get();
         foreach ($requisitos as $requisito) {
             if ((int) $requisito->institucion_id !== $institucionId) {
                 throw ValidationException::withMessages(['requisitos' => 'Un requisito pertenece a otra institución.']);
             }
+            if ($requisito->estado !== 'activo') {
+                throw ValidationException::withMessages(['requisitos' => 'Un requisito obligatorio necesita revisión institucional antes de inscribirte.']);
+            }
             $validacion = ParticipanteRequisito::query()->where('participante_id', $participante->getKey())
-                ->where('requisito_id', $requisito->getKey())->lockForUpdate()->first();
+                ->where('requisito_id', $requisito->getKey())->when($bloquear, fn ($q) => $q->lockForUpdate())->first();
             if (! $validacion || $validacion->estado !== $this->reglas->estado('requisito.validado')
                 || $validacion->revisado_por === null || $validacion->fecha_validacion === null
                 || $validacion->fecha_validacion->gt(now()) || ($requisito->requiere_documento && ! $validacion->ruta_evidencia)) {
-                throw ValidationException::withMessages(['requisitos' => 'No se ha validado el requisito obligatorio '.$requisito->getKey().'.']);
+                throw ValidationException::withMessages(['requisitos' => 'Tienes requisitos obligatorios pendientes de validación institucional. Su revisión todavía no está disponible en esta interfaz.']);
             }
         }
     }
 
-    private function exigirCupo(Grupo $grupo, ?int $excluirInscripcion = null): void
+    private function exigirCupo(Grupo $grupo, ?int $excluirInscripcion = null, bool $bloquear = true): void
     {
         if ($grupo->cupo_maximo === null) {
             if ($this->reglas->cupoNuloEsIlimitado()) {
@@ -189,7 +296,7 @@ final class InscripcionService
             ->when($excluirInscripcion !== null, fn ($query) => $query->whereKeyNot($excluirInscripcion))
             ->where(fn ($query) => $query->where('estado', '!=', $pendiente)
                 ->orWhereNull('reserva_vence_at')->orWhere('reserva_vence_at', '>', now()))
-            ->lockForUpdate()->get(['inscripciones.id']);
+            ->when($bloquear, fn ($q) => $q->lockForUpdate())->get(['inscripciones.id']);
 
         if ($ocupaciones->count() >= $grupo->cupo_maximo) {
             throw ValidationException::withMessages(['cupo' => 'El grupo ya no tiene lugares disponibles.']);

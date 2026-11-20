@@ -88,11 +88,13 @@ final class AutorizacionInstitucional
             ->when($bloquear, fn ($query) => $query->sharedLock())->findOrFail($edicion->curso_id);
 
         // Las FK no garantizan que la categoría pertenezca a la misma institución.
-        if (! $curso->categoria()->where('institucion_id', $institucionId)
-            ->when($bloquear, fn ($query) => $query->sharedLock())->first()) {
+        $categoria = $curso->categoria()->where('institucion_id', $institucionId)
+            ->when($bloquear, fn ($query) => $query->sharedLock())->first();
+        if (! $categoria) {
             throw new AuthorizationException('La categoría del curso no corresponde a esta institución.');
         }
 
+        $curso->setRelation('categoria', $categoria);
         $edicion->setRelation('curso', $curso);
         $grupo->setRelation('edicion', $edicion);
 

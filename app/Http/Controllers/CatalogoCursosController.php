@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Services\CatalogoCursosService;
+use App\Services\InscripcionService;
+use App\Services\Soporte\RetornoInscripcion;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -32,13 +35,35 @@ class CatalogoCursosController extends Controller
         ]);
     }
 
-    public function show(string $curso): View
+    public function show(Request $request, string $curso, InscripcionService $inscripciones): View
     {
         $id = filter_var($curso, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
         abort_if($id === false, 404);
 
-        return view('publico.cursos.show', [
-            'curso' => $this->catalogo->detalle($id), 'catalogo' => $this->catalogo,
-        ]);
+        $registro = $this->catalogo->detalle($id);
+        $opciones = [];
+        foreach ($registro->ediciones as $edicion) {
+            $edicion->setRelation('curso', $registro);
+            foreach ($edicion->grupos as $grupo) {
+                $grupo->setRelation('edicion', $edicion);
+                $opciones[$grupo->id] = $inscripciones->estadoGratuita($grupo, $request->user());
+            }
+        }
+
+        return view('publico.cursos.show', ['curso' => $registro, 'catalogo' => $this->catalogo, 'opciones' => $opciones]);
+    }
+
+    public function acceso(Request $request, string $curso, RetornoInscripcion $retorno): RedirectResponse
+    {
+        $id = filter_var($curso, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        abort_if($id === false, 404);
+        $this->catalogo->cursos()->findOrFail($id);
+        $datos = $request->validate(['destino' => ['nullable', Rule::in(['login', 'register'])]]);
+        if ($request->user()) {
+            return redirect()->route('cursos.show', $id);
+        }
+        $retorno->recordar($request, $id);
+
+        return redirect()->route($datos['destino'] ?? 'login');
     }
 }

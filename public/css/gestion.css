@@ -27,6 +27,18 @@
 .gestion fieldset:disabled{opacity:.9}.gestion .btn svg{flex-shrink:0}.gestion nav[role=navigation]{margin-block:20px}
 .gestion-ayuda{font-size:.875rem;color:var(--muted);margin-top:8px}.gestion-aviso{padding:14px 16px;border-left:4px solid var(--pine-teal);background:var(--surface-soft);max-width:760px}
 .gestion-volver{margin-top:20px}
+.fecha-entrada{display:flex;align-items:stretch;gap:10px}.fecha-entrada>input{flex:1;min-width:0}.fecha-entrada>.btn{flex:none}
+.fecha-mexicana [hidden]{display:none}
+.fecha-calendario{margin-top:12px;padding:16px;border:1px solid var(--muted);border-radius:10px;background:var(--surface-soft);max-width:440px}
+.fecha-calendario[hidden]{display:none}.fecha-calendario-nav{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap}
+.fecha-mes-ano,.fecha-hora{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-top:14px}
+.fecha-mes-ano>div,.fecha-hora>div{min-width:0}.fecha-mes-ano label,.fecha-hora label{font-size:.875rem}
+.fecha-mes-anuncio{font-weight:800;margin-block:14px 8px}.fecha-semana,.fecha-dias{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;text-align:center}
+.fecha-semana{font-size:.8rem;font-weight:800;margin-bottom:6px}.fecha-dias button{border:1px solid var(--line);border-radius:6px;min-width:0;min-height:38px;padding:6px 2px;background:var(--surface);color:var(--evergreen);cursor:pointer;font-weight:700}
+.fecha-dias button:not(:disabled):hover{background:var(--sweep)}.fecha-dias button[aria-pressed=true]{background:var(--primary);color:var(--primary-text)}
+.fecha-dias button:disabled{color:var(--muted);opacity:.55;cursor:not-allowed;text-decoration:line-through}.fecha-dias button[aria-current=date]{border-color:var(--pine-teal);border-width:2px}
+.fecha-error{color:var(--evergreen);border-left:3px solid var(--pine-teal);padding-left:10px;margin-top:8px;font-size:.875rem}
+@media(max-width:600px){.fecha-entrada{flex-wrap:wrap}.fecha-entrada>input{flex-basis:100%}.fecha-calendario{padding:10px}.fecha-calendario-nav .btn{min-height:44px;padding:8px}.fecha-dias button{min-height:40px}}
 .gestion-detalles{display:grid;grid-template-columns:minmax(130px,1fr) minmax(0,3fr);gap:14px 20px;max-width:900px;padding:24px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
 .gestion-detalles dt{font-weight:800}.gestion-detalles dd{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
 @media(max-width:600px){.gestion-detalles{grid-template-columns:minmax(0,1fr);gap:8px;padding:16px}.gestion-detalles dd{padding-bottom:12px;border-bottom:1px solid var(--line)}}
