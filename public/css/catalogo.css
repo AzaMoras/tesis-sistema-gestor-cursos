@@ -44,5 +44,17 @@
 .grupo-publico p + p { margin-top: 10px; }
 .catalogo-aviso { margin-top: 24px; padding: 22px; border-radius: 12px; background: var(--surface-soft); border: 1px solid var(--line); }
 .catalogo-aviso button { margin-top: 18px; color: var(--muted); cursor: not-allowed; }
+.inscripcion-gratuita { padding-top: 18px; margin-top: 18px; border-top: 1px solid var(--line); }
+.inscripcion-orientacion { font-weight: 700; }
+.inscripcion-confirmacion { display: flex; align-items: flex-start; gap: 12px; margin-block: 16px; cursor: pointer; }
+.inscripcion-confirmacion input { flex: none; width: 22px; height: 22px; margin: 2px 0 0; accent-color: var(--primary); }
+.inscripcion-confirmacion input:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+.inscripcion-gratuita button:disabled { color: var(--muted); cursor: not-allowed; margin-top: 14px; }
+.mis-cursos-tarjeta h2 { font-size: 21px; margin: 20px 0 8px; }
+.mis-cursos-tarjeta .tag { white-space: normal; align-self: flex-start; }
+.mis-cursos-datos { margin-block: 18px; flex: 1; }
+.mis-cursos-datos > div + div { margin-top: 12px; }
+.mis-cursos-datos dt { font-size: 12px; color: var(--muted); }
+.mis-cursos-datos dd { margin: 2px 0 0; font-size: 14px; }
 @media (max-width: 1100px) { .catalogo-filtros { grid-template-columns: repeat(3, minmax(0, 1fr)); } .catalogo-tarjetas { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 760px) { .catalogo-filtros { grid-template-columns: 1fr; } .catalogo-tarjetas, .edicion-datos { grid-template-columns: 1fr; } .catalogo-presentacion { padding-top: 32px; } .edicion-publica { padding: 18px; } }

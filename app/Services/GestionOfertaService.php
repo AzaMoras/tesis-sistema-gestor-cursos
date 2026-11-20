@@ -10,6 +10,7 @@ use App\Models\Institucion;
 use App\Models\User;
 use App\Services\Soporte\AuditoriaService;
 use App\Services\Soporte\AutorizacionInstitucional;
+use Carbon\CarbonImmutable;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -137,7 +138,7 @@ class GestionOfertaService
                     }
                 }
             }
-            $valores = $this->validar($tipo, $institucion, $id, $datos, $camposCurso);
+            $valores = $this->validar($tipo, $institucion, $id, $datos, $camposCurso, $registro);
             foreach (['curso_id', 'edicion_id'] as $padre) {
                 if ($id && isset($valores[$padre]) && (int) $registro->$padre !== (int) $valores[$padre]) {
                     $this->error($padre, 'No se permite trasladar el registro a otro curso o edición.');
@@ -162,12 +163,15 @@ class GestionOfertaService
         }, 3);
     }
 
-    private function validar(string $tipo, int $institucion, ?int $id, array $datos, ?array $camposCurso = null): array
+    private function validar(string $tipo, int $institucion, ?int $id, array $datos, ?array $camposCurso = null, ?Model $original = null, bool $abrir = false): array
     {
         foreach ($datos as $clave => $valor) {
             if (is_string($valor)) {
                 $datos[$clave] = trim($valor);
             }
+        }
+        if ($tipo === 'ediciones') {
+            $datos = $this->fechasDelFormulario($datos);
         }
         $reglas = match ($tipo) {
             'categorias' => [
@@ -186,8 +190,8 @@ class GestionOfertaService
                 'clave' => ['required', 'string', 'max:60', Rule::unique('ediciones')->where('curso_id', is_scalar($datos['curso_id'] ?? null) ? $datos['curso_id'] : null)->ignore($id)],
                 'modalidad' => ['required', Rule::in(['autogestionado', 'acompanada'])],
                 'fecha_inicio' => ['required', 'date_format:Y-m-d'],
-                'fecha_fin' => ['required', 'date_format:Y-m-d', 'after_or_equal:fecha_inicio'],
-                'cierre_inscripciones_at' => ['nullable', 'date_format:Y-m-d\TH:i', 'before_or_equal:fecha_fin'],
+                'fecha_fin' => ['required', 'date_format:Y-m-d'],
+                'cierre_inscripciones_at' => ['nullable', 'date_format:Y-m-d\TH:i'],
                 'precio' => ['required', 'regex:/\A(?:0|[1-9][0-9]{0,9})(?:\.[0-9]{1,2})?\z/'],
                 'moneda' => ['required', Rule::in(['MXN'])],
             ],
@@ -214,6 +218,9 @@ class GestionOfertaService
             'after_or_equal' => 'La fecha final debe ser igual o posterior a la inicial.',
             'before_or_equal' => 'El cierre de inscripciones no puede ser posterior a la fecha final.',
         ], ['categoria_id' => 'categoría', 'curso_id' => 'curso', 'edicion_id' => 'edición', 'cupo_maximo' => 'cupo', 'cierre_inscripciones_at' => 'cierre de inscripciones'])->validate();
+        if ($tipo === 'ediciones') {
+            $valores = $this->validarFechasEdicion($valores, $original instanceof Edicion && $original->exists ? $original : null, $abrir);
+        }
         if ($tipo === 'ediciones' && ! $this->consulta('cursos', $institucion)->whereKey($valores['curso_id'])->exists()) {
             $this->error('curso_id', 'El curso no está disponible en esta institución.');
         }
@@ -222,6 +229,66 @@ class GestionOfertaService
         }
 
         return $valores;
+    }
+
+    /** El texto visible también funciona sin JavaScript; el dominio sigue recibiendo ISO. */
+    private function fechasDelFormulario(array $datos): array
+    {
+        foreach (['fecha_inicio', 'fecha_fin', 'cierre_inscripciones_at'] as $campo) {
+            if (! array_key_exists($campo.'_mexicana', $datos)) {
+                continue;
+            }
+            $formato = $campo === 'cierre_inscripciones_at' ? 'd/m/Y H:i' : 'd/m/Y';
+            $valor = $datos[$campo.'_mexicana'];
+            Validator::make([$campo => $valor], [$campo => ['nullable', 'string', 'date_format:'.$formato]], [
+                'string' => 'Escribe una fecha válida en formato mexicano.',
+                'date_format' => $campo === 'cierre_inscripciones_at'
+                    ? 'Escribe una fecha y hora válidas como 19/11/2026 22:30 (24 horas).'
+                    : 'Escribe una fecha válida como 19/11/2026 (dd/mm/aaaa).',
+            ])->validate();
+            $datos[$campo] = $valor === null || $valor === '' ? null
+                : CarbonImmutable::createFromFormat('!'.$formato, $valor, config('app.timezone'))
+                    ->format($campo === 'cierre_inscripciones_at' ? 'Y-m-d\TH:i' : 'Y-m-d');
+        }
+
+        return $datos;
+    }
+
+    private function validarFechasEdicion(array $datos, ?Edicion $original, bool $abrir): array
+    {
+        $ahora = now()->toImmutable();
+        $hoy = $ahora->startOfDay();
+        $cambios = [];
+        foreach (['fecha_inicio', 'fecha_fin', 'cierre_inscripciones_at'] as $campo) {
+            $formato = $campo === 'cierre_inscripciones_at' ? 'Y-m-d\TH:i' : 'Y-m-d';
+            $cambios[$campo] = ! $original || ($datos[$campo] ?? null) !== $original->$campo?->format($formato);
+        }
+        $inicio = CarbonImmutable::createFromFormat('!Y-m-d', $datos['fecha_inicio'], config('app.timezone'));
+        $fin = CarbonImmutable::createFromFormat('!Y-m-d', $datos['fecha_fin'], config('app.timezone'));
+        if ($cambios['fecha_inicio'] && $inicio->lt($hoy)) {
+            $this->error('fecha_inicio', 'La fecha inicial nueva debe ser hoy o una fecha futura.');
+        }
+        if (($cambios['fecha_fin'] || $abrir) && $fin->lt($hoy)) {
+            $this->error('fecha_fin', 'La fecha final no puede quedar en el pasado.');
+        }
+        if (($cambios['fecha_inicio'] || $cambios['fecha_fin'] || $abrir) && $fin->lt($inicio)) {
+            $this->error('fecha_fin', 'La fecha final debe ser igual o posterior a la inicial.');
+        }
+        $cierre = ! empty($datos['cierre_inscripciones_at'])
+            ? CarbonImmutable::createFromFormat('!Y-m-d\TH:i', $datos['cierre_inscripciones_at'], config('app.timezone')) : null;
+        if ($original && ! $cambios['cierre_inscripciones_at']) {
+            // El formulario tiene precisión de minutos: conservar los segundos históricos.
+            $cierre = $original->cierre_inscripciones_at?->toImmutable();
+            $datos['cierre_inscripciones_at'] = $cierre?->format('Y-m-d H:i:s');
+        }
+        if ($cierre && ($cambios['cierre_inscripciones_at'] || $abrir) && $cierre->lte($ahora)) {
+            $this->error('cierre_inscripciones_at', 'El cierre de inscripciones debe ser posterior a la hora actual del servidor.');
+        }
+        if ($cierre && ($cambios['cierre_inscripciones_at'] || $cambios['fecha_fin'] || $abrir) && $cierre->gte($fin->addDay())) {
+            $this->error('cierre_inscripciones_at', 'El cierre no puede superar el final del día de la fecha final (23:59).');
+        }
+
+        return $datos;
     }
 
     public function publicar(User $actor, int $institucion, string $tipo, int $id): void
@@ -251,7 +318,7 @@ class GestionOfertaService
                 $this->error('estado', 'Publica el curso y abre su edición antes del grupo.');
             }
             // Revalida registros históricos antes de habilitarlos.
-            $this->validar($tipo, $institucion, $id, $this->datosDe($tipo, $registro));
+            $this->validar($tipo, $institucion, $id, $this->datosDe($tipo, $registro), original: $registro, abrir: true);
             $anterior = $registro->estado;
             $registro->estado = config('operacion.publicacion.'.$tipo);
             $registro->save();

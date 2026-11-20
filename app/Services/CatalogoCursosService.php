@@ -32,14 +32,14 @@ class CatalogoCursosService
     public function conOferta(): Builder
     {
         return $this->cursos()->with([
-            'institucion:id,nombre', 'categoria:id,nombre',
+            'institucion:id,nombre', 'categoria:id,nombre,estado',
             'ediciones' => function ($q): void {
                 $this->edicionesPublicas($q->getQuery());
                 $q->select(['id', 'curso_id', 'clave', 'modalidad', 'fecha_inicio', 'fecha_fin',
-                    'cierre_inscripciones_at', 'precio', 'moneda', 'asistencia_minima', 'calificacion_minima'])
+                    'cierre_inscripciones_at', 'precio', 'moneda', 'asistencia_minima', 'calificacion_minima', 'estado'])
                     ->orderBy('fecha_inicio')->orderBy('id');
             },
-            'ediciones.grupos' => fn ($q) => $q->select(['id', 'edicion_id', 'codigo', 'cupo_maximo'])
+            'ediciones.grupos' => fn ($q) => $q->select(['id', 'edicion_id', 'codigo', 'cupo_maximo', 'estado'])
                 ->where('estado', config('operacion.publicacion.grupos'))->orderBy('codigo'),
         ]);
     }

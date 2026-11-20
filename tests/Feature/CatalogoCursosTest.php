@@ -65,7 +65,7 @@ class CatalogoCursosTest extends TestCase
             ->assertSee('150.50 MXN')->assertSee('Edición abierta · plazas por confirmar')->assertSee('Ver detalles');
         $this->get('/cursos/'.$curso->id)->assertOk()->assertSee($curso->descripcion)->assertSee($curso->objetivos)
             ->assertSee('23/11/2026')->assertSee('23/12/2026')->assertSee('150.50 MXN')->assertSee('Capacidad máxima registrada: 20.')
-            ->assertSee('Inscribirme · Próximamente')->assertSee('disabled', false);
+            ->assertSee('Esta edición es de pago.')->assertSee('Inscribirme · No disponible')->assertSee('disabled', false);
         $this->assertGuest();
         $this->assertDatabaseCount('inscripciones', 0);
         $this->assertDatabaseCount('usuario_rol', 0);

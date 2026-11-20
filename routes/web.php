@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\CatalogoCursosController;
 use App\Http\Controllers\InicioController;
+use App\Http\Controllers\InscripcionGratuitaController;
+use App\Http\Controllers\MisCursosController;
 use App\Http\Controllers\RegistroController;
 use App\Http\Controllers\SesionController;
 use App\Http\Controllers\VerificacionCorreoController;
@@ -11,6 +13,13 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', InicioController::class)->name('inicio');
 Route::get('/cursos', [CatalogoCursosController::class, 'index'])->name('cursos.index');
 Route::get('/cursos/{curso}', [CatalogoCursosController::class, 'show'])->whereNumber('curso')->name('cursos.show');
+Route::get('/cursos/{curso}/acceso', [CatalogoCursosController::class, 'acceso'])->whereNumber('curso')->name('cursos.acceso');
+
+Route::middleware(['auth:web', 'cuenta.activa', 'verified'])->group(function (): void {
+    Route::post('/cursos/{curso}/grupos/{grupo}/inscripcion', [InscripcionGratuitaController::class, 'store'])
+        ->whereNumber(['curso', 'grupo'])->middleware('throttle:inscripcion-gratuita')->name('inscripciones.gratuitas.store');
+    Route::get('/mis-cursos', MisCursosController::class)->name('mis-cursos');
+});
 
 Route::middleware('guest:web')->group(function (): void {
     Route::get('/register', [RegistroController::class, 'create'])->name('register');

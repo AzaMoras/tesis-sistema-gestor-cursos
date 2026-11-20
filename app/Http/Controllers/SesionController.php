@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
+use App\Services\Soporte\RetornoInscripcion;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,7 +16,7 @@ class SesionController extends Controller
         return view('auth.login');
     }
 
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(LoginRequest $request, RetornoInscripcion $retorno): RedirectResponse
     {
         // Solo el servidor decide el estado admitido; no se aceptan privilegios.
         if (! Auth::guard('web')->attempt($request->safe()->only(['email', 'password']) + ['estado_cuenta' => 'activa'])) {
@@ -26,7 +27,11 @@ class SesionController extends Controller
         $request->session()->regenerate();
         $request->session()->forget('url.intended');
 
-        // Destino local neutral, sin seleccionar institución ni conceder roles.
+        if ($destino = $retorno->consumir($request)) {
+            return redirect($destino);
+        }
+
+        // Destino neutral cuando no existe un curso público elegido en el servidor.
         return redirect()->route('cuenta');
     }
 

@@ -3,7 +3,6 @@
 namespace App\Services\Soporte;
 
 use InvalidArgumentException;
-use LogicException;
 
 /** Opciones del servidor; nunca construir esta política con datos de formularios. */
 final class ReglasOperacion
@@ -63,7 +62,7 @@ final class ReglasOperacion
     public function estado(string $clave): string
     {
         return $this->estadoOpcional($clave)
-            ?? throw new LogicException('Decisión de negocio pendiente: definir el estado '.$clave.'.');
+            ?? throw new DecisionOperacionPendiente('Decisión de negocio pendiente: definir el estado '.$clave.'.');
     }
 
     /** Para diagnósticos: una decisión ausente se informa sin suponer un valor. */
@@ -75,19 +74,19 @@ final class ReglasOperacion
     public function estadosDeApertura(string $entidad): array
     {
         return $this->apertura[$entidad]
-            ?? throw new LogicException('Decisión de negocio pendiente: estados de apertura de '.$entidad.'.');
+            ?? throw new DecisionOperacionPendiente('Decisión de negocio pendiente: estados de apertura de '.$entidad.'.');
     }
 
     public function minutosDeReserva(): int
     {
         return $this->minutosReserva
-            ?? throw new LogicException('Decisión de negocio pendiente: duración de las reservas de pago.');
+            ?? throw new DecisionOperacionPendiente('Decisión de negocio pendiente: duración de las reservas de pago.');
     }
 
     public function cupoNuloEsIlimitado(): bool
     {
         return $this->cupoNuloIlimitado
-            ?? throw new LogicException('Decisión de negocio pendiente: significado de cupo_maximo nulo.');
+            ?? throw new DecisionOperacionPendiente('Decisión de negocio pendiente: significado de cupo_maximo nulo.');
     }
 
     private function validarEstado(mixed $estado): void

@@ -10,7 +10,7 @@
     @if ($cursoPublicado)
         <p class="gestion-aviso" id="curso-ayuda">La publicación se conserva. Esta edición permite correcciones de información general; la categoría, requisitos y condiciones permanecen protegidos.@if ($camposCurso === ['titulo']) Hay inscripciones existentes: solo puedes corregir el título. La descripción y los objetivos se conservan.@endif</p>
     @elseif ($tipo === 'ediciones')
-        <p class="gestion-aviso">Ambas modalidades son virtuales. Introduce fechas y horas en {{ config('app.timezone') }}. El cierre es opcional y debe ser igual o anterior a las 00:00 de la fecha final.</p>
+        <p class="gestion-aviso">Ambas modalidades son virtuales. Usa fechas dd/mm/aaaa y horas de 24 horas en {{ config('app.timezone') }}@if (config('app.timezone') === 'UTC') (tiempo universal coordinado, distinto de la hora local de México)@endif. Las fechas nuevas deben ser de hoy en adelante. El cierre es opcional, debe estar en el futuro y puede llegar hasta las 23:59 del día final.</p>
     @elseif ($tipo === 'grupos')
         <p class="gestion-aviso">Define un cupo entero positivo. Para abrir el grupo, primero publica el curso y abre su edición.</p>
     @elseif ($tipo === 'categorias')
@@ -31,12 +31,13 @@
                 <dd>{{ match ($tipo) { 'cursos' => $registro->categoria->nombre, 'ediciones' => $registro->curso->titulo, 'grupos' => $registro->edicion->clave.' · '.$registro->edicion->curso->titulo } }}</dd>
             @endif
             @foreach ($campos as $campo => [$etiqueta, $control, $maximo])
-                <dt>{{ $etiqueta }}</dt><dd>{{ ($datos[$campo] ?? null) !== null && $datos[$campo] !== '' ? $datos[$campo] : 'Sin especificar' }}</dd>
+                <dt>{{ $etiqueta }}</dt><dd>{{ in_array($control, ['date', 'datetime-local'], true) ? ($registro->$campo?->format($control === 'date' ? 'd/m/Y' : 'd/m/Y H:i') ?? 'Sin especificar') : (($datos[$campo] ?? null) !== null && $datos[$campo] !== '' ? $datos[$campo] : 'Sin especificar') }}</dd>
             @endforeach
             @if ($tipo === 'ediciones')<dt>Modalidad virtual</dt><dd>{{ $registro->modalidad === 'autogestionado' ? 'Autogestionado' : 'Acompañado por instructor' }}</dd><dt>Moneda</dt><dd>{{ $registro->moneda }}</dd>@endif
         </dl>
     @else
     <form class="auth-form gestion-formulario" method="POST" action="{{ $registro ? route('gestion.'.$tipo.'.update', [$institucion->id, $registro->id]) : route('gestion.'.$tipo.'.store', $institucion->id) }}">
+        @php($relojFechas = now())
         @csrf
         @if ($registro) @method('PUT') @endif
         <fieldset @disabled(! $editable)>
@@ -64,6 +65,8 @@
                     <label for="{{ $campo }}">{{ $etiqueta }}</label>
                     @if ($control === 'textarea')
                         <textarea id="{{ $campo }}" name="{{ $campo }}" rows="4" maxlength="{{ $maximo }}" @readonly($bloqueado) @if ($ayudasCampo) aria-describedby="{{ $ayudasCampo }}" @endif @required($tipo === 'cursos' && $campo === 'descripcion') @error($campo) aria-invalid="true" @enderror>{{ $valorCampo }}</textarea>
+                    @elseif (in_array($control, ['date', 'datetime-local'], true))
+                        <x-fecha-mexicana :nombre="$campo" :valor="$valorCampo" :original="$datos[$campo] ?? null" :con-hora="$control === 'datetime-local'" :reloj="$relojFechas" :obligatorio="$campo !== 'cierre_inscripciones_at'" />
                     @else
                         <input id="{{ $campo }}" name="{{ $campo }}" type="{{ $control }}" value="{{ $valorCampo }}" @if ($maximo) maxlength="{{ $maximo }}" @endif @if ($control === 'number') min="1" max="4294967295" step="1" @endif @if ($campo === 'slug' && ! $registro) data-slug-sugerido data-slug-manual="{{ old('slug') !== null ? 'true' : 'false' }}" @endif @if ($ayudasCampo) aria-describedby="{{ $ayudasCampo }}" @endif @if ($campo === 'precio') inputmode="decimal" @endif @required($campo !== 'cierre_inscripciones_at') @error($campo) aria-invalid="true" @enderror>
                     @endif

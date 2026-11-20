@@ -8,7 +8,7 @@
             <a href="{{ route('inicio') }}#contacto">Contacto</a>
         </div>
         <div class="header-actions">
-            <x-acceso-publico />
+            <x-acceso-publico :curso="request()->routeIs('cursos.show') ? (int) request()->route('curso') : null" />
             <button class="btn btn-outline btn-sm theme-toggle" type="button" data-theme-toggle aria-label="Activar modo oscuro" aria-pressed="false" hidden><x-icon name="theme" :size="19" /><span data-theme-label>Modo oscuro</span></button>
         </div>
         <details class="public-mobile-menu">

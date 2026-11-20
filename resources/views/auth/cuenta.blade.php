@@ -20,6 +20,9 @@
                 <p>Tu correo electrónico está verificado.</p>
             @endif
             <div class="button-row"><a class="btn btn-outline" href="{{ route('inicio') }}">Volver al inicio</a></div>
+            @if (auth('web')->user()->participante)
+                <div class="button-row"><a class="btn btn-primary" href="{{ route('mis-cursos') }}"><x-icon name="book" :size="18" />Mis cursos</a></div>
+            @endif
             @if ($oferta->institucionesAutorizadas(auth('web')->user())->isNotEmpty())
                 <p><a class="btn btn-primary" href="{{ route('gestion.instituciones') }}"><x-icon name="grid" :size="18" />Panel de gestión</a></p>
             @endif

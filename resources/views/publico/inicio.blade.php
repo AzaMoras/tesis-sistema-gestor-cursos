@@ -37,10 +37,10 @@
 
     <section class="process-section" id="como-funciona" aria-labelledby="proceso-titulo">
         <div class="container section-space">
-            <div class="section-heading"><p class="eyebrow">PASO A PASO</p><h2 id="proceso-titulo">Tu próximo paso empieza aquí</h2><p>Empieza por explorar los cursos publicados. Las solicitudes de inscripción se habilitarán más adelante.</p></div>
+            <div class="section-heading"><p class="eyebrow">PASO A PASO</p><h2 id="proceso-titulo">Tu próximo paso empieza aquí</h2><p>Empieza por explorar los cursos publicados y las condiciones de sus grupos gratuitos habilitados.</p></div>
             <ol class="feature-grid process-list">
                 <li class="feature-card"><h3>Consulta la oferta</h3><p>Revisa los objetivos, requisitos y fechas publicados para cada curso.</p></li>
-                <li class="feature-card"><h3>Solicita tu acceso</h3><p>Envía tu solicitud cuando se habilite este servicio. El personal autorizado revisará tus requisitos antes de confirmar el acceso.</p></li>
+                <li class="feature-card"><h3>Confirma tu inscripción</h3><p>Inicia sesión o crea tu cuenta, elige un grupo gratuito habilitado y confirma tu inscripción si cumples sus requisitos.</p></li>
                 <li class="feature-card"><h3>Comienza tu formación</h3><p>Con la inscripción confirmada, sigue las actividades y evaluaciones definidas para tu curso virtual.</p></li>
             </ol>
         </div>
@@ -57,7 +57,7 @@
     </section>
 
     <section class="container cta-section" id="contacto" aria-labelledby="contacto-titulo">
-        <div><p class="eyebrow">CONTACTO</p><h2 id="contacto-titulo">¿Tienes dudas sobre tu próximo paso?</h2><p>Los canales oficiales de contacto se publicarán cuando la institución los confirme. Mientras tanto, conoce los pasos previstos para comenzar. Las solicitudes de acceso todavía no están disponibles.</p></div>
+        <div><p class="eyebrow">CONTACTO</p><h2 id="contacto-titulo">¿Tienes dudas sobre tu próximo paso?</h2><p>Los canales oficiales de contacto se publicarán cuando la institución los confirme. Mientras tanto, consulta los requisitos de cada curso y las opciones de inscripción gratuita habilitadas.</p></div>
         <a class="btn btn-outline" href="#como-funciona">Consultar el proceso <x-icon name="arrow-right" :size="18" /></a>
     </section>
 @endsection

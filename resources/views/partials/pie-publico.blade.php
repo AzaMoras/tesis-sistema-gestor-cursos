@@ -5,7 +5,7 @@
             <p>Sistema de gestión de cursos e inscripciones para formación 100 % virtual.</p>
         </div>
         <div><h3>Explorar</h3><a href="{{ route('cursos.index') }}">Catálogo de cursos</a><a href="{{ route('inicio') }}#como-funciona">Cómo funciona</a></div>
-        <div><h3>Información</h3><a href="{{ route('inicio') }}#contacto">Contacto</a><p>Proyecto académico en desarrollo. Las inscripciones en línea se habilitarán más adelante.</p></div>
+        <div><h3>Información</h3><a href="{{ route('inicio') }}#contacto">Contacto</a><p>Consulta las condiciones de inscripción de cada grupo. Por ahora, solo se admiten inscripciones gratuitas habilitadas.</p></div>
     </div>
     <div class="container footer-bottom">© {{ date('Y') }} Aula Verde · Proyecto académico.</div>
 </footer>
