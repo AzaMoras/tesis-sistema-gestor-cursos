@@ -1,5 +1,35 @@
 # Sistema de Gestión de Cursos e Inscripciones en Línea
 
+## Docker local y producción
+
+El equipo validó el despliegue local en Windows 11 con Docker Desktop, WSL 2,
+Docker 29.9.3 y Docker Compose v5.7.0. Nginx, PHP-FPM y PostgreSQL quedaron
+saludables y la landing respondió en http://localhost:8080. Se aplicaron 36
+migraciones tanto en PostgreSQL aislado como en la base principal del stack
+local. Las 36 seguían registradas después de reiniciar los servicios.
+
+La suite PHPUnit obtuvo **149 pruebas y 550 aserciones** con SQLite en memoria.
+La restauración desde respaldo y la recreación de contenedores conservando
+volúmenes siguen pendientes de verificación. **El despliegue en la nube no se
+ha realizado.**
+
+Guía completa de arquitectura, variables, TLS, migraciones, pruebas, respaldo,
+actualizaciones y diagnóstico: [Docker de Aula Verde](docs/DOCKER.md).
+
+En una copia nueva, inicializar primero secretos privados:
+
+```powershell
+php scripts/docker-init.php
+docker compose up -d --build
+```
+
+En esta copia los secretos locales ya existen. Con el servicio `app` iniciado,
+ejecuta la suite con las variables de aislamiento desde el arranque del proceso:
+
+```powershell
+docker compose exec -T -e APP_ENV=testing -e DB_CONNECTION=sqlite -e 'DB_DATABASE=:memory:' -e 'DB_URL=' app php vendor/bin/phpunit --display-warnings --do-not-cache-result
+```
+
 > **Guía de contexto y estilo del proyecto — políticas actualizadas el 10/11/2026.**
 > Repositorio previsto: `https://github.com/AzaMoras/tesis-sistema-gestor-cursos`
 > Las fuentes funcionales vigentes son [Decisiones v2](docs/DECISIONES_PRODUCTO_V2.md) y [Reglas v2](docs/REGLAS_NEGOCIO_V2.md). La [auditoría de Fase 00](docs/AUDITORIA_FASE_00.md) registra código y esquema inspeccionados localmente, cobertura y pendientes. Las secciones del paquete Blade siguen siendo guía de prototipos, no prueba de flujos implementados.
@@ -22,7 +52,7 @@ No es una escuela presencial. La tabla `sedes`, requerida por el profesor, repre
 | Permisos | `users` ↔ `usuario_rol` ↔ `roles` ↔ `rol_permiso` ↔ `permisos`, ámbito institución | Modelos, middleware y servicios existentes; integración completa por recurso pendiente |
 | Registro | Autorregistro de participantes y correo verificado; sin roles privilegiados ni INE/CURP general | Política aprobada; rutas pendientes. Se conserva servicio interno de solicitudes |
 | Diseño | Cinco verdes + fuentes de Google + SVG, sin emojis | Guía de diseño acordada |
-| Docker | Despliegue reproducible futuro | Propuesta; no incluido ni probado |
+| Docker | Nginx, PHP-FPM 8.4 y PostgreSQL 17 | Despliegue local comprobado en Windows 11 con WSL 2. Despliegue en la nube pendiente. Véase docs/DOCKER.md |
 | Frontend | Componentes Blade reutilizables en vez de cinco vistas duplicadas | Plantillas de ejemplo incluidas en este paquete |
 
 ## 3. Identidad visual y estilo

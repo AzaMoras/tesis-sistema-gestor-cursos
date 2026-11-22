@@ -1,8 +1,10 @@
 *.log
 .DS_Store
 .env
-.env.backup
-.env.production
+.env.*
+!.env.example
+!.env.docker.example
+!.env.production.example
 .phpactor.json
 .phpunit.result.cache
 /.fleet
@@ -11,7 +13,7 @@
 /.phpunit.cache
 /.vscode
 /.zed
-/auth.json
+auth.json
 /node_modules
 /public/build
 /public/hot
@@ -22,3 +24,14 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+/.docker/
+/backups/
+/certs/
+/Microsoft/
+/.aws/
+.npmrc
+*.pem
+*.key
+*.pfx
+*.p12
+*.dump
