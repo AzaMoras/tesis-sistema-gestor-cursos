@@ -28,6 +28,12 @@
                             <div><dt>Fecha de inscripción ({{ config('app.timezone') }})</dt><dd>{{ $inscripcion->fecha_inscripcion?->format('d/m/Y H:i') ?? 'Sin fecha registrada' }}</dd></div>
                             @if ($inscripcion->fecha_cancelacion)<div><dt>Fecha de cancelación ({{ config('app.timezone') }})</dt><dd>{{ $inscripcion->fecha_cancelacion->format('d/m/Y H:i') }}</dd></div>@endif
                         </dl>
+                        @php($accesoAula = $accesosAula[$inscripcion->id])
+                        @if ($accesoAula['permitido'])
+                            <a class="btn btn-primary" href="{{ route('aula.show', $inscripcion->id) }}"><x-icon name="book" :size="18" />Entrar al aula</a>
+                        @else
+                            <p class="text-muted">{{ $accesoAula['mensaje'] }}</p>
+                        @endif
                         @if ($curso && $cursosPublicos->contains($curso->id))
                             <a class="btn btn-outline" href="{{ route('cursos.show', $curso->id) }}">Ver detalles del curso <x-icon name="arrow-right" :size="18" /></a>
                         @else

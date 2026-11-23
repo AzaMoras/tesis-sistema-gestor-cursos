@@ -34,6 +34,9 @@
                 <p class="gestion-identificador">Identificador: {{ $registro->id }}</p>
                 </div>
                 <div class="gestion-acciones" role="group" aria-label="Acciones de {{ $nombreRegistro }}">
+                    @if ($tipo === 'cursos')
+                        <a class="btn btn-outline" href="{{ route('gestion.contenido.curso', [$institucion->id, $registro->id]) }}"><x-icon name="layers" :size="18" />Contenido del curso</a>
+                    @endif
                     <a class="btn btn-outline" href="{{ route('gestion.'.$tipo.'.show', [$institucion->id, $registro->id]) }}" aria-label="Ver detalles de {{ $nombreRegistro }}"><x-icon name="eye" :size="18" />Ver detalles</a>
                     @if ($oferta->editable($tipo, $registro))
                         <a class="btn btn-primary" href="{{ route('gestion.'.$tipo.'.edit', [$institucion->id, $registro->id]) }}" aria-label="Editar {{ $nombreRegistro }}"><x-icon name="edit" :size="18" />Editar</a>

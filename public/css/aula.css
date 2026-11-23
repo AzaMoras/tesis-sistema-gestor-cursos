@@ -1,0 +1,21 @@
+/* Aula privada y contenido institucional: componentes compartidos, sin portal por rol. */
+.aula .sr-only,.pagina-gestion .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.pagina-aula .public-header{position:static}
+.aula{padding-block:28px 48px;min-height:65vh;overflow-wrap:anywhere}
+.aula :focus-visible,.contenido-contexto~* :focus-visible{outline:3px solid var(--focus);outline-offset:4px}
+.aula-migas{display:flex;flex-wrap:wrap;gap:12px;align-items:center;font-size:.9rem;margin-bottom:24px}
+.aula-cabecera{display:flex;align-items:center;gap:22px;padding:28px;border:1px solid var(--line);border-radius:18px;background:var(--surface)}
+.aula-cabecera>div{min-width:0}.aula-cabecera h1{font-size:clamp(1.7rem,4vw,2.5rem);line-height:1.2;margin:10px 0}.aula-cabecera p{margin:0}
+.aula-emblema,.aula-recurso-icono{display:grid;place-items:center;flex:none;background:var(--pale);color:var(--palm-leaf);border-radius:14px}
+.aula-emblema{width:68px;height:68px}.aula-aviso{font-size:.92rem;line-height:1.7;padding:16px 20px;border-left:4px solid var(--pine-teal);background:var(--surface-soft);margin-block:22px}
+.aula-estructura{display:grid;grid-template-columns:minmax(220px,285px) minmax(0,1fr);gap:28px;align-items:start}
+.aula-indice{border:1px solid var(--line);border-radius:14px;padding:22px;background:var(--surface)}
+.aula-indice h2{font-size:1.1rem;margin-top:0}.aula-indice ol{padding:0;list-style:none;display:grid;gap:8px;margin-block:20px}.aula-indice li a{display:block;padding:10px 12px;border-radius:8px;background:var(--surface-soft);line-height:1.5}.aula-indice li a:hover{background:var(--pale)}
+.aula-contenidos{display:grid;gap:20px;min-width:0}.aula-introduccion h2{margin:0 0 10px;font-size:1.5rem}.aula-introduccion p{color:var(--muted);margin:0}
+.aula-modulo{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px;scroll-margin-top:24px;min-width:0}
+.aula-modulo-cabecera{display:flex;align-items:start;gap:16px}.aula-modulo-cabecera>div{min-width:0}.aula-modulo h3{font-size:1.2rem;line-height:1.5;margin:8px 0 14px}.aula-numero{display:grid;place-items:center;min-width:40px;min-height:40px;padding:6px;background:var(--pale);color:var(--palm-leaf);border-radius:10px;font-weight:800}
+.aula-materiales{list-style:none;padding:0;margin:20px 0 0;display:grid;gap:12px}.aula-materiales li{display:flex;gap:14px;align-items:center;border:1px solid var(--line);background:var(--surface-soft);border-radius:10px;padding:16px}.aula-materiales li>div{min-width:0}.aula-recurso-icono{width:44px;height:44px}.aula-tipo{font-size:.8rem;color:var(--muted);margin:0 0 4px}.aula-materiales a{display:inline-flex;align-items:center;gap:10px;min-height:44px;font-weight:800;line-height:1.5}.aula-materiales a svg{flex:none}.aula-materiales a:hover{text-decoration:underline}
+.aula-vacio{color:var(--muted);line-height:1.7}.aula-pie{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:28px;padding-top:22px;border-top:1px solid var(--line);font-size:.875rem;color:var(--muted)}
+.contenido-contexto{margin-block:24px}.contenido-contexto h2{font-size:1.5rem;margin-block:12px}.contenido-descripcion{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7;margin-block:12px}.contenido-url{overflow-wrap:anywhere}.contenido-error{margin-top:8px;font-size:.875rem;border-left:3px solid var(--pine-teal);padding-left:10px}.gestion-registro :is(h3,h4){font-size:1.2rem;margin:0}
+@media(max-width:800px){.aula-estructura{grid-template-columns:minmax(0,1fr)}.aula-indice ol{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.aula{padding-top:20px}.aula-cabecera{padding:20px;align-items:start;gap:14px;flex-direction:column}.aula-emblema{width:48px;height:48px}.aula-modulo,.aula-indice{padding:18px}.aula-indice ol{grid-template-columns:minmax(0,1fr)}.aula-materiales li{padding:12px;gap:10px}.aula-modulo-cabecera{gap:12px}.aula-pie{gap:12px}}

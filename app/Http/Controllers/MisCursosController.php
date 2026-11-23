@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Inscripcion;
+use App\Services\AulaVirtualService;
 use App\Services\CatalogoCursosService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class MisCursosController extends Controller
 {
-    public function __invoke(Request $request, CatalogoCursosService $catalogo): View
+    public function __invoke(Request $request, CatalogoCursosService $catalogo, AulaVirtualService $aula): View
     {
         $participante = $request->user()->participante()->first();
         abort_unless($participante, 403, 'Tu cuenta no tiene un perfil de participante activo.');
@@ -25,6 +26,8 @@ class MisCursosController extends Controller
         $publicos = $catalogo->cursos()->whereIn('id', $registros->getCollection()
             ->map(fn ($registro) => $registro->grupo?->edicion?->curso_id)->filter())->pluck('id');
 
-        return view('participante.mis-cursos', ['inscripciones' => $registros, 'cursosPublicos' => $publicos]);
+        $accesosAula = $registros->getCollection()->mapWithKeys(fn ($registro) => [$registro->id => $aula->disponibilidad($request->user(), $registro->id)]);
+
+        return view('participante.mis-cursos', ['inscripciones' => $registros, 'cursosPublicos' => $publicos, 'accesosAula' => $accesosAula]);
     }
 }
