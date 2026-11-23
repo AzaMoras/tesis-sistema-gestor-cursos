@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AulaVirtualController;
 use App\Http\Controllers\CatalogoCursosController;
 use App\Http\Controllers\InicioController;
 use App\Http\Controllers\InscripcionGratuitaController;
@@ -19,6 +20,8 @@ Route::middleware(['auth:web', 'cuenta.activa', 'verified'])->group(function ():
     Route::post('/cursos/{curso}/grupos/{grupo}/inscripcion', [InscripcionGratuitaController::class, 'store'])
         ->whereNumber(['curso', 'grupo'])->middleware('throttle:inscripcion-gratuita')->name('inscripciones.gratuitas.store');
     Route::get('/mis-cursos', MisCursosController::class)->name('mis-cursos');
+    Route::get('/mis-cursos/{inscripcion}/aula', AulaVirtualController::class)
+        ->whereNumber('inscripcion')->name('aula.show');
 });
 
 Route::middleware('guest:web')->group(function (): void {
@@ -41,3 +44,4 @@ Route::middleware(['auth:web', 'cuenta.activa', VerificacionCorreoHabilitada::cl
 
 require __DIR__.'/tesis_vistas_demo.php';
 require __DIR__.'/gestion.php';
+require __DIR__.'/contenido.php';

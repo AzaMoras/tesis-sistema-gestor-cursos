@@ -23,6 +23,7 @@
                 @foreach (['categorias' => 'Categorías', 'cursos' => 'Cursos', 'ediciones' => 'Ediciones', 'grupos' => 'Grupos'] as $seccion => $nombre)
                     <a href="{{ route('gestion.'.$seccion.'.index', $institucion->id) }}" @if (($tipo ?? '') === $seccion) aria-current="page" @endif>{{ $nombre }}</a>
                 @endforeach
+                <a href="{{ route('gestion.contenido.index', $institucion->id) }}" @if (request()->routeIs('gestion.contenido.*')) aria-current="page" @endif>Contenido del curso</a>
             </nav>
         @endisset
         @if ($errors->any())
