@@ -5,8 +5,7 @@
     <div class="app-shell">
         <aside class="app-sidebar" aria-label="Navegación privada">
             <a class="brand brand-light" href="{{ url('/') }}">
-                <span class="brand-mark" aria-hidden="true"><x-icon name="book" :size="19" /></span>
-                <span>Aula Verde</span>
+                <x-marca-aula-verde />
             </a>
             <p class="sidebar-caption">ESPACIO DE TRABAJO</p>
             @hasSection('menu_panel')

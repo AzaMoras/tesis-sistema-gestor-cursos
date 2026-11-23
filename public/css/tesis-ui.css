@@ -60,7 +60,16 @@ html[data-theme="dark"] .sitio-publico {
 }
 .sitio-publico :is(section[id], main[id]) { scroll-margin-top: 16px; }
 .sitio-publico .skip-link { background: var(--surface); color: var(--evergreen); }
-.sitio-publico .brand-mark { color: #1E352F; background: #A6C36F; }
+.brand-logo {
+    display: block;
+    flex: none;
+    inline-size: clamp(42px, 4vw, 50px);
+    block-size: auto;
+    padding: 3px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+}
 .sitio-publico .public-header { background: var(--surface); }
 .sitio-publico .public-nav { gap: 24px; min-height: 88px; }
 .sitio-publico .desktop-links { gap: 12px; color: var(--evergreen); }
@@ -92,6 +101,25 @@ html[data-theme="dark"] .sitio-publico {
 }
 .sitio-publico .btn-primary:is(:hover, :focus-visible) { color: var(--primary-text); }
 .sitio-publico .btn-outline:not(:disabled):is(:hover, :focus-visible) { border-color: var(--pine-teal); }
+
+.sitio-publico .btn-limpiar {
+    border-color: var(--muted);
+    transition: background-size 300ms ease, border-color 300ms ease;
+}
+.btn-limpiar > svg {
+    flex: none;
+    transition: transform 300ms ease;
+}
+.sitio-publico .btn-limpiar:focus-visible { background-size: 100% 100%; }
+@media (hover: none) {
+    .sitio-publico .btn-limpiar:hover:not(:focus-visible) { background-size: 0 100%; }
+}
+@media (prefers-reduced-motion: no-preference) {
+    .btn-limpiar:focus-visible > svg { transform: translateX(2px) rotate(-10deg); }
+    @media (hover: hover) {
+        .btn-limpiar:hover > svg { transform: translateX(2px) rotate(-10deg); }
+    }
+}
 
 /* El círculo queda dentro del botón y no desplaza los controles vecinos. */
 .sitio-publico .logout-button {

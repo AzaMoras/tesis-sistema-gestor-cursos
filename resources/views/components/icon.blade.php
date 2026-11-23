@@ -4,6 +4,9 @@
         @case('theme') <circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18Z" fill="currentColor"/> @break
         @case('book') <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/> @break
         @case('arrow-right') <path d="M5 12h14m-6-6 6 6-6 6"/> @break
+        @case('arrow-left') <path d="M19 12H5m6-6-6 6 6 6"/> @break
+        @case('institution') <path d="m3 9 9-5 9 5H3Zm2 11h14M7 12v5m5-5v5m5-5v5"/> @break
+        @case('broom') <path d="m20 4-7 7m-2-2 4 4-2 2-4-4 2-2ZM9 11l-5 4v5h5l4-5m-5 2-2 3"/> @break
         @case('home') <path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M9 21v-7h6v7"/> @break
         @case('user') <circle cx="12" cy="8" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/> @break
         @case('users') <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/> @break

@@ -9,7 +9,7 @@
 @section('contenido')
     <section class="container auth-section" aria-labelledby="verificacion-titulo">
         <div class="auth-card">
-            <p class="eyebrow">Aula Verde</p>
+            <div class="brand auth-brand"><x-marca-aula-verde /></div>
             <h1 id="verificacion-titulo">Verifica tu correo</h1>
             <p>Abre el enlace que enviamos a <strong>{{ auth('web')->user()->email }}</strong>. Revisa también tu carpeta de correo no deseado.</p>
             <p>Hasta verificarlo, las funciones académicas permanecerán restringidas. Si el enlace venció, solicita uno nuevo. Para abrirlo debes iniciar sesión con esta misma cuenta.</p>

@@ -9,7 +9,7 @@
 @section('contenido')
     <section class="container auth-section" aria-labelledby="login-titulo">
         <div class="auth-card">
-            <p class="eyebrow">Aula Verde</p>
+            <div class="brand auth-brand"><x-marca-aula-verde /></div>
             <h1 id="login-titulo">Iniciar sesión</h1>
             <p class="text-muted">Accede con el correo y la contraseña de tu cuenta.</p>
             <form method="POST" action="{{ route('login.store') }}" class="auth-form">

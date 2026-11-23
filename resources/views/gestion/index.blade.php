@@ -13,7 +13,7 @@
             @foreach (['activa', 'borrador', 'publicado', 'abierta'] as $estado)<option @selected(request('estado') === $estado)>{{ $estado }}</option>@endforeach
         </select></div>
         <button type="submit" class="btn btn-outline">Filtrar</button>
-        <a href="{{ route('gestion.'.$tipo.'.index', $institucion->id) }}">Limpiar</a>
+        <a class="btn btn-outline btn-limpiar" href="{{ route('gestion.'.$tipo.'.index', $institucion->id) }}"><x-icon name="broom" :size="18" />Limpiar</a>
     </form>
     <ul class="gestion-lista">
         @forelse ($registros as $registro)

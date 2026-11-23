@@ -21,7 +21,7 @@
                 @endforeach
             </select></div>
             <button class="btn btn-primary" type="submit">Buscar cursos</button>
-            <a class="btn btn-outline" href="{{ route('cursos.index') }}">Limpiar filtros</a>
+            <a class="btn btn-outline btn-limpiar" href="{{ route('cursos.index') }}"><x-icon name="broom" :size="18" />Limpiar filtros</a>
         </form>
         @if ($errors->any())
             <div class="catalogo-aviso" role="alert"><p>Revisa los filtros:</p><ul>@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>
