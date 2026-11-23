@@ -11,6 +11,45 @@
 .gestion-filtros label{display:block;font-size:.875rem;font-weight:700;margin-bottom:6px}
 .gestion-filtros>div:first-child{flex:1;min-width:180px}
 .gestion-lista{display:grid;gap:14px;list-style:none;padding:0;margin-block:20px}
+.gestion-instituciones { max-inline-size: 720px; }
+.gestion-institucion {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: clamp(10px, 2vw, 18px);
+    min-block-size: 80px;
+    padding: clamp(12px, 2vw, 18px);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--evergreen);
+    transition: background-color 300ms ease, border-color 300ms ease, transform 300ms ease, box-shadow 300ms ease;
+}
+.gestion-institucion-texto { display: grid; gap: 4px; }
+.gestion-institucion-texto > span { color: var(--muted); font-size: .875rem; }
+.gestion-institucion-flecha { display: flex; color: var(--pine-teal); }
+.gestion-institucion-flecha > svg, .gestion-volver-cuenta > svg { transition: transform 300ms ease; }
+.gestion-institucion:is(:focus-visible, :active) {
+    border-color: var(--pine-teal);
+    background-color: var(--pale);
+}
+.gestion-institucion:active { box-shadow: none; }
+.sitio-publico .gestion-volver-cuenta { border-color: var(--muted); }
+@media (hover: hover) {
+    .gestion-institucion:hover {
+        border-color: var(--pine-teal);
+        background-color: var(--pale);
+    }
+    .gestion-institucion:hover:not(:active) { box-shadow: var(--shadow); }
+}
+@media (prefers-reduced-motion: no-preference) {
+    .gestion-volver-cuenta:focus-visible > svg { transform: translateX(-3px); }
+    @media (hover: hover) {
+        .gestion-institucion:hover:not(:active) { transform: translateY(-2px); }
+        .gestion-institucion:hover .gestion-institucion-flecha > svg { transform: translateX(3px); }
+        .gestion-volver-cuenta:hover > svg { transform: translateX(-3px); }
+    }
+}
 .gestion-registro{padding:20px;min-width:0;margin:0;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
 .gestion-registro-cabecera{display:flex;align-items:start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:12px}
 .gestion-registro h2{font-size:1.25rem;margin:0;flex:1;min-width:160px}

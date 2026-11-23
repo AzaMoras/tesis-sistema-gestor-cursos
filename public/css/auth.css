@@ -11,3 +11,27 @@
 .auth-errors ul{padding-left:20px;margin-bottom:0}
 .auth-form [aria-invalid=true]{border-width:2px}
 .public-access form{margin:0}
+
+.auth-brand { margin-bottom: 18px; }
+.cuenta-contextos { display: grid; gap: 12px; margin-top: 24px; }
+.cuenta-contexto:has(h2) {
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface-soft);
+}
+.cuenta-contexto h2 { margin: 0 0 10px; font-size: 1rem; }
+.cuenta-volver { margin-top: 20px; }
+.cuenta-panel rect {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform 300ms ease;
+}
+@media (prefers-reduced-motion: no-preference) {
+    .cuenta-panel:focus-visible rect { transform: rotate(12deg); }
+    .cuenta-panel:focus-visible rect:nth-child(even) { transform: rotate(-12deg); }
+    @media (hover: hover) {
+        .cuenta-panel:hover rect { transform: rotate(12deg); }
+        .cuenta-panel:hover rect:nth-child(even) { transform: rotate(-12deg); }
+    }
+}

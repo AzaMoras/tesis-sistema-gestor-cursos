@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AulaVirtualController;
 use App\Http\Controllers\CatalogoCursosController;
+use App\Http\Controllers\CuentaController;
 use App\Http\Controllers\InicioController;
 use App\Http\Controllers\InscripcionGratuitaController;
 use App\Http\Controllers\MisCursosController;
@@ -32,7 +33,7 @@ Route::middleware('guest:web')->group(function (): void {
 });
 
 Route::post('/logout', [SesionController::class, 'destroy'])->middleware('auth:web')->name('logout');
-Route::view('/mi-cuenta', 'auth.cuenta')->middleware(['auth:web', 'cuenta.activa'])->name('cuenta');
+Route::get('/mi-cuenta', CuentaController::class)->middleware(['auth:web', 'cuenta.activa'])->name('cuenta');
 
 Route::middleware(['auth:web', 'cuenta.activa', VerificacionCorreoHabilitada::class])->group(function (): void {
     Route::get('/email/verify', [VerificacionCorreoController::class, 'notice'])->name('verification.notice');

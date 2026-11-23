@@ -1,6 +1,6 @@
 <header class="public-header">
     <nav class="container public-nav" aria-label="Navegación principal">
-        <a class="brand" href="{{ route('inicio') }}"><span class="brand-mark" aria-hidden="true"><x-icon name="book" :size="19" /></span><span>Aula Verde</span></a>
+        <a class="brand" href="{{ route('inicio') }}"><x-marca-aula-verde /></a>
         <div class="desktop-links">
             <a href="{{ route('inicio') }}">Inicio</a>
             <a href="{{ route('cursos.index') }}">Cursos</a>

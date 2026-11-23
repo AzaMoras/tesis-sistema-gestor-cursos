@@ -9,7 +9,7 @@
 @section('contenido')
     <section class="container auth-section" aria-labelledby="registro-titulo">
         <div class="auth-card">
-            <p class="eyebrow">Aula Verde</p>
+            <div class="brand auth-brand"><x-marca-aula-verde /></div>
             <h1 id="registro-titulo">Crea tu cuenta</h1>
             <p class="text-muted">Regístrate como participante. Solo necesitas tu nombre, correo y contraseña.@if (config('auth.verification.enabled')) Después verificarás tu correo electrónico.@endif</p>
             <form method="POST" action="{{ route('register.store') }}" class="auth-form">

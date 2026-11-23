@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Participante;
 use App\Models\User;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Support\Facades\Auth;
@@ -78,6 +79,59 @@ class AutenticacionTest extends ServiceTestCase
         $this->get('/_demo-tesis/privado')->assertForbidden();
         self::assertSame(0, $user->roles()->count());
         self::assertNull($user->fresh()->email_verified_at);
+    }
+
+    public function test_cuenta_participante_sin_roles_muestra_solo_mis_cursos(): void
+    {
+        $user = User::factory()->create(['estado_cuenta' => 'activa']);
+        $this->record(Participante::class, ['user_id' => $user->id, 'fecha_alta' => today()]);
+
+        $this->actingAs($user, 'web')->get(route('cuenta'))->assertOk()
+            ->assertSee('href="'.route('mis-cursos').'"', false)->assertSee('Mis cursos')
+            ->assertDontSee('Panel de gestión');
+        $this->get(route('mis-cursos'))->assertOk();
+        $this->get(route('gestion.cursos.index', $this->institucion->id))->assertForbidden();
+    }
+
+    public function test_cuenta_administrativa_con_perfil_sin_inscripciones_muestra_solo_gestion(): void
+    {
+        $this->grant($this->admin, 'cursos.gestionar');
+        $this->record(Participante::class, ['user_id' => $this->admin->id, 'fecha_alta' => today()]);
+
+        $this->actingAs($this->admin, 'web')->get(route('cuenta'))->assertOk()
+            ->assertSee('href="'.route('gestion.instituciones').'"', false)->assertSee('Panel de gestión')
+            ->assertDontSee('href="'.route('mis-cursos').'"', false)->assertDontSee('Mis cursos');
+        $this->get(route('gestion.instituciones'))->assertOk()
+            ->assertSee('href="'.route('gestion.cursos.index', $this->institucion->id).'"', false)
+            ->assertDontSee('href="'.route('gestion.cursos.index', $this->otraInstitucion->id).'"', false)
+            ->assertSee('href="'.route('cuenta').'"', false);
+        $this->get(route('gestion.cursos.index', $this->institucion->id))->assertOk();
+        $this->get(route('mis-cursos'))->assertOk();
+    }
+
+    public function test_cuenta_de_personal_con_inscripcion_conserva_ambos_contextos(): void
+    {
+        $this->grant($this->admin, 'cursos.gestionar');
+        $participante = $this->record(Participante::class, ['user_id' => $this->admin->id, 'fecha_alta' => today()]);
+        $this->enrollment(['estado' => 'cancelada', 'fecha_cancelacion' => now()], $participante);
+
+        $this->actingAs($this->admin, 'web')->get(route('cuenta'))->assertOk()
+            ->assertSeeInOrder(['Como participante', 'Mis cursos', 'Como personal de gestión', 'Panel de gestión'])
+            ->assertSee('href="'.route('mis-cursos').'"', false)
+            ->assertSee('href="'.route('gestion.instituciones').'"', false);
+        $this->get(route('mis-cursos'))->assertOk()->assertSee('Estado de inscripción: cancelada');
+        $this->get(route('gestion.cursos.index', $this->institucion->id))->assertOk();
+        $this->get(route('gestion.cursos.index', $this->otraInstitucion->id))->assertForbidden();
+    }
+
+    public function test_cuenta_de_personal_con_rol_participante_muestra_mis_cursos_sin_inscripciones(): void
+    {
+        $user = $this->participante->usuario;
+        $this->grant($user, 'cursos.gestionar', role: 'coordinador');
+
+        $this->actingAs($user, 'web')->get(route('cuenta'))->assertOk()
+            ->assertSeeInOrder(['Como participante', 'Mis cursos', 'Como personal de gestión', 'Panel de gestión']);
+        $this->get(route('mis-cursos'))->assertOk()->assertSee('Todavía no tienes inscripciones');
     }
 
     public function test_solo_activa_es_admitida_incluyendo_estados_desconocidos(): void
