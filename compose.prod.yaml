@@ -1,11 +1,20 @@
 name: aula-verde-production
+x-logging: &production-logging
+  driver: local
+  options:
+    max-size: "10m"
+    max-file: "5"
 services:
   app:
+    image: aula-verde-app:${AULA_RELEASE:-local}
     build:
       context: .
       target: production
     user: "33:33"
-    env_file: .docker/production/app.env
+    env_file: .docker/production/app-mariadb.env
+    environment:
+      AULA_PRODUCTION: "1"
+      AULA_DOMAIN: ${AULA_DOMAIN:-aula.invalid}
     volumes:
       - storage:/var/www/html/storage
     networks: [web, database]
@@ -13,6 +22,7 @@ services:
       db:
         condition: service_healthy
     restart: unless-stopped
+    logging: *production-logging
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
     healthcheck:
@@ -22,43 +32,51 @@ services:
       retries: 5
       start_period: 30s
   nginx:
+    image: aula-verde-nginx:${AULA_RELEASE:-local}
     build:
       context: .
       target: nginx
     user: "101:101"
     ports: ["80:8080", "443:8443"]
     volumes:
-      - ./nginx/production.conf:/etc/nginx/conf.d/default.conf:ro
+      - type: bind
+        source: ./.docker/production/nginx.conf
+        target: /etc/nginx/conf.d/default.conf
+        read_only: true
+        bind:
+          create_host_path: false
       - ./certs:/etc/nginx/certs:ro
+      - ./.docker/production/acme:/var/www/acme:ro
     networks: [web]
     depends_on:
       app:
         condition: service_healthy
     restart: unless-stopped
+    logging: *production-logging
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/up"]
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8081/up"]
       interval: 15s
       timeout: 5s
       retries: 5
       start_period: 30s
   db:
-    image: postgres:17-bookworm
-    user: "postgres"
-    env_file: .docker/production/db.env
+    image: mariadb:11.8.9-noble
+    user: "mysql"
+    env_file: .docker/production/db-mariadb.env
+    command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_nopad_bin']
     environment:
-      PGDATA: /var/lib/postgresql/data/pgdata
-      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+      MARIADB_ROOT_HOST: localhost
     volumes:
-      - postgres:/var/lib/postgresql/data
-      - ./docker/postgres-init.sh:/docker-entrypoint-initdb.d/10-app.sh:ro
+      - mariadb:/var/lib/mysql
     networks: [database]
     restart: unless-stopped
+    logging: *production-logging
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -69,4 +87,4 @@ networks:
     internal: true
 volumes:
   storage:
-  postgres:
+  mariadb:

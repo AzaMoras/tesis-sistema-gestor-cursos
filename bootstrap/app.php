@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\RespuestaJsonPublica;
 use App\Http\Middleware\AdministradorMiddleware;
 use App\Http\Middleware\CoordinadorMiddleware;
 use App\Http\Middleware\CuentaActivaMiddleware;
@@ -35,5 +36,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $respuestaJsonPublica = new RespuestaJsonPublica;
+        $exceptions->render($respuestaJsonPublica->registrarDelegacion(...));
+        $exceptions->respond($respuestaJsonPublica);
     })->create();

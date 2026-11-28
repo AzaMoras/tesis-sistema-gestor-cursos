@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM php:8.4-fpm-bookworm AS app
-RUN apt-get update && apt-get install -y --no-install-recommends libpq-dev libicu-dev libzip-dev libonig-dev libsqlite3-dev unzip git \
-    && docker-php-ext-install pdo_pgsql pdo_sqlite intl zip bcmath mbstring opcache \
+RUN apt-get update && apt-get install -y --no-install-recommends libicu-dev libzip-dev libonig-dev libsqlite3-dev unzip git \
+    && docker-php-ext-install pdo_mysql pdo_sqlite intl zip bcmath mbstring opcache \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 WORKDIR /var/www/html
