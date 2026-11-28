@@ -1,0 +1,13 @@
+services:
+  app:
+    environment:
+      APP_ENV: testing
+      DB_CONNECTION: mariadb
+      DB_DATABASE: aula_test_compatibilidad
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_SOCKET: ""
+      DB_URL: ""
+  db:
+    environment:
+      MARIADB_DATABASE: aula_test_compatibilidad

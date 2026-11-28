@@ -5,7 +5,7 @@ services:
       context: .
       target: runtime
     user: "33:33"
-    env_file: .docker/local/app.env
+    env_file: .docker/local/app-mariadb.env
     volumes:
       - storage:/var/www/html/storage
     networks: [web, database]
@@ -41,21 +41,20 @@ services:
       retries: 5
       start_period: 30s
   db:
-    image: postgres:17-bookworm
-    user: "postgres"
-    env_file: .docker/local/db.env
+    image: mariadb:11.8.9-noble
+    user: "mysql"
+    env_file: .docker/local/db-mariadb.env
+    command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_nopad_bin']
     environment:
-      PGDATA: /var/lib/postgresql/data/pgdata
-      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+      MARIADB_ROOT_HOST: localhost
     volumes:
-      - postgres:/var/lib/postgresql/data
-      - ./docker/postgres-init.sh:/docker-entrypoint-initdb.d/10-app.sh:ro
+      - mariadb:/var/lib/mysql
     networks: [database]
     restart: unless-stopped
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -66,4 +65,4 @@ networks:
     internal: true
 volumes:
   storage:
-  postgres:
+  mariadb:
